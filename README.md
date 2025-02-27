@@ -4,6 +4,19 @@
 
 Đây là dự án frontend cho ứng dụng mạng xã hội, được xây dựng bằng React, TypeScript và Tailwind CSS. Dự án này sử dụng Vite làm công cụ build và các thành phần UI từ thư viện Shadcn UI.
 
+---
+
+Dự án được phát triển bởi Nhóm 11 - Kiến trúc và thiết kế phần mềm.
+
+## Danh sách thành viên
+
+| MSSV     | Họ và tên           |
+| -------- | ------------------- |
+| 21100321 | Trần Lộc            |
+| 21110561 | Võ Ngọc Thắng       |
+| 21001205 | Trịnh Nam Trung     |
+| 21024041 | Trần Thị Huyền Trân |
+
 ## Cấu trúc dự án
 
 ```
@@ -100,7 +113,3 @@ Dự án sử dụng các thành phần từ Shadcn UI, được tùy chỉnh tr
 - Hoàn thiện trang cá nhân với thông tin người dùng
 - Tích hợp chức năng đăng nhập/đăng ký
 - Thêm chức năng tạo bài đăng mới
-
----
-
-Dự án được phát triển bởi [Tên team/công ty của bạn].
