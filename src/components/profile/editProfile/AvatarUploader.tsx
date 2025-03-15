@@ -27,7 +27,7 @@ export default function AvatarUploader({
   };
 
   const handleRemoveAvatar = () => {
-    onAvatarChange(null);
+    onAvatarChange("https://www.caythuocdangian.com/wp-content/uploads/anh-dai-dien-61.jpg");
     setShowAvatarOptions(false);
   };
 
@@ -38,7 +38,7 @@ export default function AvatarUploader({
         onClick={() => setShowAvatarOptions(!showAvatarOptions)}
       >
         <Avatar className="w-16 h-16 border border-gray-400">
-          <AvatarImage src={avatar ?? undefined} alt="User Avatar" />
+          <AvatarImage src={avatar ?? undefined} alt="User Avatar" style={{objectFit: "cover"}}/>
         </Avatar>
       </div>
 
@@ -46,17 +46,17 @@ export default function AvatarUploader({
         <div className="absolute left-1/2 mt-17 transform -translate-x-1/2 mt-3 w-[140px] bg-white border border-gray-300 p-3 rounded-lg shadow-md z-50">
           <label className="text-xs w-full flex justify-center items-center px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100">
             Tải ảnh lên
-            <input
+            {/* <input
               type="file"
               accept="image/*"
               className="hidden"
               onChange={handleUploadAvatar}
-            />
+            /> */}
           </label>
           <Button
             variant="ghost"
             className="text-xs w-full text-left px-3 py-2 rounded-md hover:bg-gray-100"
-            onClick={handleRemoveAvatar}
+            // onClick={handleRemoveAvatar}
           >
             Gỡ ảnh xuống
           </Button>

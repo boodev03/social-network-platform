@@ -28,6 +28,7 @@ export default function EditProfile({
   const [avatar, setAvatar] = useState<string | null>(
     "https://www.caythuocdangian.com/wp-content/uploads/anh-dai-dien-61.jpg"
   );
+  const [isEditingLink, setIsEditingLink] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState<boolean>(false);
 
   return (
@@ -67,15 +68,25 @@ export default function EditProfile({
 
         <div className="mt-3 border-b border-gray-400 pb-2">
           <label className="text-xs text-gray-600">Liên kết</label>
-          <div className="mt-1">
-            <Button
-              variant="ghost"
-              className="text-xs p-0 hover:bg-gray-100 px-2 py-1 rounded-md"
-              onClick={() => setShowLinkModal(true)}
-            >
-              + Thêm liên kết
-            </Button>
-          </div>
+          {isEditingLink ? (
+            <Input
+              value={newLink}
+              onChange={(e) => setNewLink(e.target.value)}
+              className="w-full mt-1 text-sm"
+              placeholder="https://link-cua-ban.com"
+            />
+          ) : (
+            <div className="flex items-center justify-between mt-1">
+              <span className="text-sm">{newLink || "Chưa có liên kết"}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsEditingLink(true)}
+              >
+                Chỉnh sửa
+              </Button>
+            </div>
+          )}
         </div>
 
         {showLinkModal && (

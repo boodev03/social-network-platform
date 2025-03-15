@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import FollowersList from "./FollowList";
-import CreatePostDialog from "./CreatePost";
+import CreatePostDialog from "../createPost/CreatePost";
 import EditProfile from "./editProfile/EditProfile"; // Import modal EditProfile
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 export default function ProfilePage() {
   const name: string = "Huyền Trân";
@@ -13,8 +14,10 @@ export default function ProfilePage() {
   const [bio, setBio] = useState<string>(
     "Cứ dịu dàng, cứ chân thành vui vẻ\nCứ yêu đời, đời cũng sẽ yêu ta."
   );
-  const [link, setLink] = useState<string>("");
-  const [isEditing, setIsEditing] = useState<boolean>(false); // State để mở modal
+  const [link, setLink] = useState<string>(
+    "https://www.facebook.com/nhully.tran"
+  );
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [avatar, setAvatar] = useState<string>(
     "https://www.caythuocdangian.com/wp-content/uploads/anh-dai-dien-61.jpg"
   );
@@ -26,7 +29,7 @@ export default function ProfilePage() {
   ) => {
     setBio(newBio);
     setLink(newLink);
-    setAvatar(newAvatar ?? ""); // Nếu newAvatar là null thì setAvatar thành rỗng
+    setAvatar(newAvatar ?? "");
     setIsEditing(false);
   };
 
@@ -47,19 +50,21 @@ export default function ProfilePage() {
                 href={link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 text-sm underline mt-1"
+                className="text-black-600 text-sm underline mt-1"
               >
                 {link}
               </a>
             )}
-
-            {/* Danh sách follower và following */}
-            <FollowersList />
+            <FollowersList username={username} />
           </div>
 
           {/* Avatar */}
           <Avatar className="w-30 h-30 border border-gray-400">
-            <AvatarImage src={avatar ?? undefined} alt="User Avatar" />
+            <AvatarImage
+              src={avatar ?? undefined}
+              alt="User Avatar"
+              style={{ objectFit: "cover" }}
+            />
           </Avatar>
         </div>
 
@@ -84,9 +89,30 @@ export default function ProfilePage() {
               Repost
             </TabsTrigger>
           </TabsList>
+
           <TabsContent value="threads">
-            <CreatePostDialog />
+            {/* Create Post Box */}
+            <div className="flex items-center gap-2 my-4">
+              <Avatar className="w-10 h-10">
+                <AvatarImage src={avatar} alt="User Avatar" />
+              </Avatar>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <div className="w-full border rounded-lg p-2 text-gray-500 cursor-text">
+                    Bạn đang nghĩ gì
+                  </div>
+                </DialogTrigger>
+
+                <DialogContent>
+                  <CreatePostDialog />
+                </DialogContent>
+              </Dialog>
+            </div>
           </TabsContent>
+
+          <TabsContent value="liked"></TabsContent>
+          <TabsContent value="reposts"></TabsContent>
         </Tabs>
       </Card>
 

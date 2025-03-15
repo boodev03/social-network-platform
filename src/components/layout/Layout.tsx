@@ -1,7 +1,8 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Home, Search, PlusSquare, Bell, User, LogOut } from "lucide-react";
 import { ROUTES } from "../../constants/routes";
+import CreatePostDialog from "../createPost/CreatePost";
 
 import {
   DropdownMenu,
@@ -9,6 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 
 // These imports will be needed when you install the packages
 // import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -71,12 +73,44 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               className={isActive(ROUTES.HOME) ? "text-black" : "text-gray-500"}
             />
           </Link>
-          <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
+
+          {/* <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
             <Search size={28} strokeWidth={2} className="text-gray-500" />
-          </button>
-          <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
+          </button> */}
+          <Link
+            to={ROUTES.SEARCH}
+            className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 ${
+              isActive(ROUTES.SEARCH) ? "bg-black/10" : ""
+            }`}
+          >
+            <Search
+              size={28}
+              strokeWidth={2}
+              className={
+                isActive(ROUTES.SEARCH) ? "text-black" : "text-gray-500"
+              }
+            />
+          </Link>
+
+          {/* <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
             <PlusSquare size={28} strokeWidth={2} className="text-gray-500" />
+          </button> */}
+          <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
+            <Dialog>
+              <DialogTrigger asChild>
+                <PlusSquare
+                  size={28}
+                  strokeWidth={2}
+                  className="text-gray-500"
+                />
+              </DialogTrigger>
+
+              <DialogContent>
+                <CreatePostDialog />
+              </DialogContent>
+            </Dialog>
           </button>
+          
           <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
             <Bell size={28} strokeWidth={2} className="text-gray-500" />
           </button>
