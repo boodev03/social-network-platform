@@ -1,6 +1,6 @@
-import React, { ReactNode, useState } from "react";
+import { Bell, Home, LogOut, PlusSquare, Search, User } from "lucide-react";
+import React, { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Search, PlusSquare, Bell, User, LogOut } from "lucide-react";
 import { ROUTES } from "../../constants/routes";
 import CreatePostDialog from "../createPost/CreatePost";
 
@@ -110,7 +110,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </DialogContent>
             </Dialog>
           </button>
-          
+
           <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
             <Bell size={28} strokeWidth={2} className="text-gray-500" />
           </button>
