@@ -9,6 +9,8 @@ import Search from "./components/search/Search";
 import { ROUTES } from "./constants/routes";
 import Layout from "./components/layout/Layout";
 import "./App.css";
+import Feed from "./components/feed/Feed";
+import PostDetail from "./components/feed/PostDetail/PostDetail";
 
 function App() {
   return (
@@ -22,11 +24,19 @@ function App() {
         />
         <Route path={ROUTES.LANDING} element={<LandingPage />} />
         {/* Các trang cần hiển thị trong Layout */}
-        <Route element={<Layout><Outlet /></Layout>}>
+        <Route
+          element={
+            <Layout>
+              <Outlet />
+            </Layout>
+          }
+        >
           <Route path={ROUTES.HOME} element={<HomePage />} />
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
           <Route path={ROUTES.SEARCH} element={<Search />} />
         </Route>
+        <Route path="/" element={<Feed />} />
+        <Route path="/posts/:id" element={<PostDetail />} />
       </Routes>
     </BrowserRouter>
   );
