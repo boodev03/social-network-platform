@@ -79,8 +79,8 @@ export default function FeedItem({
   };
 
   return (
-    <article className="w-full hover:bg-muted/50 transition-colors">
-      <div className="px-4 py-3 space-y-3">
+    <article className="w-full hover:bg-muted/80 transition-colors p-4">
+      <div className="space-y-3">
         <FeedHeader avatar={avatar} username={username} date={date} />
 
         <FeedContent content={content} onImageClick={openImagePreview} />

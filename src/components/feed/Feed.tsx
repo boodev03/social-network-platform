@@ -1,9 +1,14 @@
 import { useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+// import { Dialog, DialogContent } from "@/components/ui/dialog";
+
 import CreatePostDialog from "../createPost/CreatePost";
 import FeedItem from "./FeedItem";
 
+import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 // Sample data for demonstration
 const sampleFeedData = [
   {
@@ -63,53 +68,78 @@ const Feed = () => {
   const feedItems = sampleFeedData;
 
   return (
-    <div className="w-full h-full bg-background min-h-screen border-x">
-      {/* Create new post area */}
-      <div className="border-b border-border p-4">
-        <div className="flex gap-3">
-          <Avatar className="h-10 w-10 ring-2 ring-background">
-            <AvatarImage
-              src="https://randomuser.me/api/portraits/men/85.jpg"
-              alt="Your avatar"
-            />
-            <AvatarFallback>YA</AvatarFallback>
-          </Avatar>
 
-          <div
-            className="flex-1 cursor-pointer"
-            onClick={() => setIsCreatePostOpen(true)}
-          >
-            <div className="w-full rounded-full bg-muted/60 hover:bg-muted px-4 py-2.5 text-sm text-muted-foreground">
-              What's happening?
+    <div className="flex flex-col items-center min-h-screen text-black pt-4">
+      <p className="font-bold p-4">Bảng tin</p>
+      <Card className="w-full max-w-4xl rounded-xl shadow-lg">
+
+        <div className="w-full h-full bg-background min-h-screen mt-2">
+          {/* Create new post area */}
+          {/* <div className="border-b border-border p-4">
+            <div className="flex gap-3">
+              <Avatar className="h-10 w-10 ring-2 ring-background">
+                <AvatarImage
+                  src="https://randomuser.me/api/portraits/men/85.jpg"
+                  alt="Your avatar"
+                />
+                <AvatarFallback>YA</AvatarFallback>
+              </Avatar>
+
+              <div
+                className="flex-1 cursor-pointer"
+                onClick={() => setIsCreatePostOpen(true)}
+              >
+                <div className="w-full rounded-full bg-muted/60 hover:bg-muted px-4 py-2.5 text-sm text-muted-foreground">
+                  What's happening?
+                </div>
+              </div>
             </div>
+          </div> */}
+
+          <div className="flex items-center gap-2 p-4">
+            <Avatar className="w-10 h-10">
+              <AvatarImage src="https://randomuser.me/api/portraits/men/85.jpg" alt="User Avatar" />
+            </Avatar>
+
+            <Dialog>
+              <DialogTrigger asChild>
+                <div className="w-full border rounded-lg p-2 text-gray-500 cursor-text">
+                  Bạn đang nghĩ gì
+                </div>
+              </DialogTrigger>
+
+              <DialogContent className="sm:max-w-[680px]">
+                <CreatePostDialog />
+              </DialogContent>
+            </Dialog>
           </div>
+
+          {/* Feed items */}
+          <div className="divide-y divide-gray-300 border-t border-gray-300">
+            {feedItems.map((item) => (
+              <FeedItem
+                id={item.id}
+                key={item.id}
+                avatar={item.avatar}
+                username={item.username}
+                date={item.date}
+                content={item.content}
+                likes={item.likes}
+                comments={item.comments}
+                reposts={item.reposts}
+                isLiked={item.isLiked}
+              />
+            ))}
+          </div>
+
+          {/* Create Post Dialog */}
+          <Dialog open={isCreatePostOpen} onOpenChange={setIsCreatePostOpen}>
+            <DialogContent className="sm:max-w-[680px]">
+              <CreatePostDialog />
+            </DialogContent>
+          </Dialog>
         </div>
-      </div>
-
-      {/* Feed items */}
-      <div className="divide-y divide-border">
-        {feedItems.map((item) => (
-          <FeedItem
-            id={item.id}
-            key={item.id}
-            avatar={item.avatar}
-            username={item.username}
-            date={item.date}
-            content={item.content}
-            likes={item.likes}
-            comments={item.comments}
-            reposts={item.reposts}
-            isLiked={item.isLiked}
-          />
-        ))}
-      </div>
-
-      {/* Create Post Dialog */}
-      <Dialog open={isCreatePostOpen} onOpenChange={setIsCreatePostOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <CreatePostDialog />
-        </DialogContent>
-      </Dialog>
+      </Card>
     </div>
   );
 };

@@ -105,7 +105,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 />
               </DialogTrigger>
 
-              <DialogContent>
+              <DialogContent className="sm:max-w-[680px]">
                 <CreatePostDialog />
               </DialogContent>
             </Dialog>
@@ -167,7 +167,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       {/* Main Content */}
-      <div className="ml-16 md:ml-20">
+      <div className="ml-0">
         {/* Header for mobile - only shown on smaller screens */}
         <header className="md:hidden border-b border-gray-200 sticky top-0 bg-white z-10 px-4 py-3">
           <div className="flex justify-center">

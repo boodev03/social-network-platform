@@ -8,6 +8,9 @@ import { formatDistanceToNow } from "date-fns";
 import { Heart, MessageCircle, Repeat2, Share } from "lucide-react";
 import { FeedContent } from "../FeedItem/FeedContent";
 import Layout from "@/components/layout/Layout";
+import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft } from "lucide-react";
 
 interface Comment {
   id: number;
@@ -159,23 +162,39 @@ const PostDetail = () => {
     }
   };
 
+  const navigate = useNavigate(); // Sử dụng hook useNavigate để điều hướng
+
+  const handleGoBack = () => {
+    navigate(-1); // Quay lại trang trước đó
+  };
+
   return (
-    <Layout>
-      <div className="container max-w-2xl mx-auto">
-        <div className="flex flex-col h-full bg-background">
-          {/* Main post */}
-          <div className="p-4 border-b border-border">
-            <div className="flex items-start gap-3">
-              <Avatar className="h-11 w-11 ring-2 ring-background">
-                <AvatarImage src={post.avatar} alt={post.username} />
-                <AvatarFallback>{post.username[0]}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold">{post.username}</span>
-                  <span className="text-sm text-muted-foreground">
-                    {formatDistanceToNow(post.date, { addSuffix: true })}
-                  </span>
+    <div className="flex flex-col items-center min-h-screen bg-white text-black p-4">
+      {/* Thêm icon quay lại */}
+      <div className="flex items-center gap-3 p-4">
+        <button onClick={handleGoBack} className="text-primary">
+          <ChevronLeft size={24} />
+        </button>
+        <p className="font-bold">Thread trả lời</p>
+      </div>
+      <Card className="w-full max-w-4xl rounded-xl shadow-lg pt-2">
+        <Layout>
+          {/* <div className="container max-w-2xl mx-auto"> */}
+          <div className="flex flex-col h-full bg-background">
+            {/* Main post */}
+            <div className="p-4 border-b border-border">
+              <div className="flex flex-col items-start gap-3">
+                <div className="flex items-center gap-3">
+                  <Avatar className="h-11 w-11 ring-2 ring-background">
+                    <AvatarImage src={post.avatar} alt={post.username} />
+                    <AvatarFallback>{post.username[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-sm">{post.username}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {formatDistanceToNow(post.date, { addSuffix: true })}
+                    </span>
+                  </div>
                 </div>
                 <FeedContent
                   content={post.content}
@@ -219,144 +238,145 @@ const PostDetail = () => {
                   </Button>
                 </div>
               </div>
+              {/* </div> */}
             </div>
-          </div>
 
-          {/* Comment input */}
-          <form
-            onSubmit={handleCommentSubmit}
-            className="p-4 border-b border-border"
-          >
-            <div className="flex gap-3">
-              <Avatar className="h-10 w-10 ring-2 ring-background">
-                <AvatarImage
-                  src="https://randomuser.me/api/portraits/men/85.jpg"
-                  alt="Your avatar"
-                />
-                <AvatarFallback>YA</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <Input
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Write a comment..."
-                  className="bg-muted/60"
-                />
+            {/* Comment input */}
+            <form
+              onSubmit={handleCommentSubmit}
+              className="p-4 border-b border-border"
+            >
+              <div className="flex gap-3">
+                <Avatar className="h-10 w-10 ring-2 ring-background">
+                  <AvatarImage
+                    src="https://randomuser.me/api/portraits/men/85.jpg"
+                    alt="Your avatar"
+                  />
+                  <AvatarFallback>YA</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <Input
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    placeholder="Write a comment..."
+                    className="bg-muted/60"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  variant="default"
+                  size="sm"
+                  disabled={!newComment.trim()}
+                >
+                  Reply
+                </Button>
               </div>
-              <Button
-                type="submit"
-                variant="default"
-                size="sm"
-                disabled={!newComment.trim()}
-              >
-                Reply
-              </Button>
-            </div>
-          </form>
+            </form>
 
-          {/* Comments list */}
-          <ScrollArea className="flex-1">
-            <div className="divide-y divide-border">
-              {comments.map((comment) => (
-                <div key={comment.id} className="p-4">
-                  <div className="flex items-start gap-3">
-                    <Avatar className="h-10 w-10 ring-2 ring-background">
-                      <AvatarImage
-                        src={comment.avatar}
-                        alt={comment.username}
-                      />
-                      <AvatarFallback>{comment.username[0]}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold">
-                          {comment.username}
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                          {formatDistanceToNow(comment.date, {
-                            addSuffix: true,
-                          })}
-                        </span>
-                      </div>
-                      <p className="mt-1 text-sm">{comment.content}</p>
-                      <div className="flex items-center gap-6 mt-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="flex items-center gap-1.5 text-muted-foreground hover:text-primary"
-                        >
-                          <Heart
-                            className={
-                              comment.isLiked ? "fill-primary text-primary" : ""
-                            }
-                            size={16}
-                          />
-                          <span className="text-sm">{comment.likes}</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="flex items-center gap-1.5 text-muted-foreground hover:text-primary"
-                        >
-                          <MessageCircle size={16} />
-                          <span className="text-sm">{comment.replies}</span>
-                        </Button>
+            {/* Comments list */}
+            <ScrollArea className="flex-1">
+              <div className="divide-y divide-border">
+                {comments.map((comment) => (
+                  <div key={comment.id} className="p-4">
+                    <div className="flex items-start gap-3">
+                      <Avatar className="h-10 w-10 ring-2 ring-background">
+                        <AvatarImage
+                          src={comment.avatar}
+                          alt={comment.username}
+                        />
+                        <AvatarFallback>{comment.username[0]}</AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">
+                            {comment.username}
+                          </span>
+                          <span className="text-sm text-muted-foreground">
+                            {formatDistanceToNow(comment.date, {
+                              addSuffix: true,
+                            })}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-sm">{comment.content}</p>
+                        <div className="flex items-center gap-6 mt-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="flex items-center gap-1.5 text-muted-foreground hover:text-primary"
+                          >
+                            <Heart
+                              className={
+                                comment.isLiked ? "fill-primary text-primary" : ""
+                              }
+                              size={16}
+                            />
+                            <span className="text-sm">{comment.likes}</span>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="flex items-center gap-1.5 text-muted-foreground hover:text-primary"
+                          >
+                            <MessageCircle size={16} />
+                            <span className="text-sm">{comment.replies}</span>
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
+                ))}
+              </div>
+            </ScrollArea>
 
-          {/* Image Preview */}
-          {post.content.images && (
-            <div
-              className={`fixed inset-0 bg-black/80 z-50 flex items-center justify-center ${
-                previewImage ? "opacity-100" : "opacity-0 pointer-events-none"
-              } transition-opacity duration-200`}
-              onClick={closeImagePreview}
-            >
-              <div className="relative max-w-4xl w-full mx-4">
-                <button
-                  className="absolute -top-12 right-0 text-white hover:text-gray-300"
-                  onClick={closeImagePreview}
-                >
-                  Close
-                </button>
-                <div className="relative aspect-square">
-                  <img
-                    src={previewImage || ""}
-                    alt="Preview"
-                    className="w-full h-full object-contain"
-                  />
-                  {post.content.images.length > 1 && (
-                    <>
-                      <button
-                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70"
-                        onClick={showPreviousImage}
-                        disabled={currentImageIndex === 0}
-                      >
-                        Previous
-                      </button>
-                      <button
-                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70"
-                        onClick={showNextImage}
-                        disabled={
-                          currentImageIndex === post.content.images.length - 1
-                        }
-                      >
-                        Next
-                      </button>
-                    </>
-                  )}
+            {/* Image Preview */}
+            {post.content.images && (
+              <div
+                className={`fixed inset-0 bg-black/80 z-50 flex items-center justify-center ${previewImage ? "opacity-100" : "opacity-0 pointer-events-none"
+                  } transition-opacity duration-200`}
+                onClick={closeImagePreview}
+              >
+                <div className="relative max-w-4xl w-full mx-4">
+                  <button
+                    className="absolute -top-12 right-0 text-white hover:text-gray-300"
+                    onClick={closeImagePreview}
+                  >
+                    Close
+                  </button>
+                  <div className="relative aspect-square">
+                    <img
+                      src={previewImage || ""}
+                      alt="Preview"
+                      className="w-full h-full object-contain"
+                    />
+                    {post.content.images.length > 1 && (
+                      <>
+                        <button
+                          className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70"
+                          onClick={showPreviousImage}
+                          disabled={currentImageIndex === 0}
+                        >
+                          Previous
+                        </button>
+                        <button
+                          className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70"
+                          onClick={showNextImage}
+                          disabled={
+                            currentImageIndex === post.content.images.length - 1
+                          }
+                        >
+                          Next
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </Layout>
+            )}
+          </div>
+          {/* </div> */}
+        </Layout>
+      </Card>
+    </div>
   );
 };
 

@@ -10,26 +10,26 @@ interface AvatarUploaderProps {
 
 export default function AvatarUploader({
   avatar,
-  onAvatarChange,
+  // onAvatarChange,
 }: AvatarUploaderProps) {
   const [showAvatarOptions, setShowAvatarOptions] = useState<boolean>(false);
 
-  const handleUploadAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        onAvatarChange(reader.result as string);
-        setShowAvatarOptions(false);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleUploadAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = event.target.files?.[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       onAvatarChange(reader.result as string);
+  //       setShowAvatarOptions(false);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
-  const handleRemoveAvatar = () => {
-    onAvatarChange("https://www.caythuocdangian.com/wp-content/uploads/anh-dai-dien-61.jpg");
-    setShowAvatarOptions(false);
-  };
+  // const handleRemoveAvatar = () => {
+  //   onAvatarChange("https://www.caythuocdangian.com/wp-content/uploads/anh-dai-dien-61.jpg");
+  //   setShowAvatarOptions(false);
+  // };
 
   return (
     <div className="relative flex justify-end mr-9">
