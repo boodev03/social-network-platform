@@ -117,12 +117,12 @@ const ForgotPassword = () => {
             {/* Header - responsive text sizes and padding */}
             <div className="px-5 sm:px-6 md:px-8 pt-6 sm:pt-7 md:pt-8 pb-3 sm:pb-4">
               <h1 className="text-2xl sm:text-2xl md:text-3xl font-bold text-white text-center">
-                {isSubmitted ? "Check your email" : "Reset password"}
+                {isSubmitted ? "Kiểm tra email của bạn" : "Đặt lại mật khẩu"}
               </h1>
               <p className="mt-1 sm:mt-2 text-center text-sm sm:text-base text-gray-300">
                 {isSubmitted
-                  ? "We've sent you instructions to reset your password"
-                  : "Enter your email and we'll send you a link to reset your password"}
+                  ? "Chúng tôi đã gửi cho bạn hướng dẫn để đặt lại mật khẩu"
+                  : "Nhập email của bạn và chúng tôi sẽ gửi cho bạn một liên kết để đặt lại mật khẩu"}
               </p>
             </div>
 
@@ -181,7 +181,9 @@ const ForgotPassword = () => {
                       {/* Button text and icon */}
                       <span className="relative z-10 flex items-center justify-center">
                         <span className="mr-2">
-                          {isSubmitting ? "Sending..." : "Send reset link"}
+                          {isSubmitting
+                            ? "Đang gửi..."
+                            : "Gửi liên kết đặt lại"}
                         </span>
                         {!isSubmitting && (
                           <Send size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -230,14 +232,14 @@ const ForgotPassword = () => {
 
                   {/* Additional instructions */}
                   <div className="text-center text-sm sm:text-base text-gray-300 space-y-2 sm:space-y-3">
-                    <p>If you don't see the email, check your spam folder.</p>
+                    <p>Nếu bạn không thấy email, kiểm tra thư rác của bạn.</p>
                     <p>
-                      If you still need help, please{" "}
+                      Nếu bạn vẫn cần trợ giúp, vui lòng{" "}
                       <a
                         href="#"
                         className="text-indigo-400 hover:text-indigo-300 transition-colors duration-200"
                       >
-                        contact support
+                        liên hệ hỗ trợ
                       </a>
                       .
                     </p>
@@ -252,7 +254,7 @@ const ForgotPassword = () => {
                             size={16}
                             className="sm:w-[18px] sm:h-[18px] mr-2"
                           />
-                          <span>Return to sign in</span>
+                          <span>Trở lại đăng nhập</span>
                         </span>
                       </button>
                     </Link>
@@ -265,12 +267,12 @@ const ForgotPassword = () => {
             {!isSubmitted && (
               <div className="px-5 sm:px-6 md:px-8 pb-5 sm:pb-6 md:pb-8 text-center">
                 <p className="text-xs sm:text-sm text-gray-300">
-                  Remember your password?{" "}
+                  Nhớ mật khẩu của bạn?{" "}
                   <Link
                     to={ROUTES.AUTH.SIGN_IN}
                     className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors duration-200"
                   >
-                    Sign in
+                    Đăng nhập
                   </Link>
                 </p>
               </div>
@@ -280,7 +282,7 @@ const ForgotPassword = () => {
           {/* Footer - responsive spacing and text size */}
           <div className="mt-5 sm:mt-6 md:mt-8 text-center">
             <div className="flex justify-center space-x-4 sm:space-x-6 text-xs sm:text-sm text-gray-400">
-              {["Terms", "Privacy", "Cookies"].map((item, index) => (
+              {["Điều khoản", "Quyền riêng tư", "Cookie"].map((item, index) => (
                 <Link
                   key={index}
                   to="#"

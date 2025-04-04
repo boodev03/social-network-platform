@@ -1,20 +1,93 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Input } from "@/components/ui/input";
 import { ROUTES } from "@/constants/routes";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { AlertCircle, Eye, EyeOff } from "lucide-react";
+import { login } from "@/services/user";
+import { toast } from "sonner";
+import { useAuth } from "@/providers/AuthProvider";
 
 const SignIn = () => {
+  const navigate = useNavigate();
+  const { login: authLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    username: "",
+    password: "",
+  });
+  const [errors, setErrors] = useState({
+    username: "",
+    password: "",
+  });
+  const [apiError, setApiError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (errors[name as keyof typeof errors]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = { ...errors };
+
+    if (!formData.username.trim()) {
+      newErrors.username = "Vui lòng nhập tên đăng nhập";
+      isValid = false;
+    }
+
+    if (!formData.password) {
+      newErrors.password = "Vui lòng nhập mật khẩu";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    setApiError("");
+
+    try {
+      const response = await login(formData.username, formData.password);
+      authLogin({
+        id: response.data.id,
+        username: response.data.username,
+        email: "",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      toast.success("Đăng nhập thành công!");
+      navigate(ROUTES.HOME);
+    } catch (error: any) {
+      console.error("Đăng nhập thất bại:", error);
+      toast.error(error.message || "Đăng nhập thất bại");
+      setApiError(
+        error.message || "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại sau."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full flex flex-col relative overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950">
-      {/* Modern social platform background elements */}
+      {/* Các phần tử nền của nền tảng xã hội hiện đại */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-400/10 via-transparent to-transparent"></div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-purple-400/10 via-transparent to-transparent"></div>
 
-      {/* Connection lines - social network concept */}
+      {/* Đường kết nối - khái niệm mạng xã hội */}
       <div className="absolute inset-0 overflow-hidden opacity-10">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -42,7 +115,7 @@ const SignIn = () => {
         </svg>
       </div>
 
-      {/* Floating elements representing social connections - responsive sizes */}
+      {/* Các phần tử nổi đại diện cho kết nối xã hội - kích thước responsive */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 right-1/4 w-32 sm:w-48 md:w-64 rounded-full bg-gradient-to-r from-indigo-500/10 to-purple-500/10 blur-3xl"></div>
         <div className="absolute bottom-1/4 left-1/4 w-32 sm:w-48 md:w-64 rounded-full bg-gradient-to-r from-blue-500/10 to-indigo-500/10 blur-3xl"></div>
@@ -56,7 +129,7 @@ const SignIn = () => {
           transition={{ duration: 0.8 }}
           className="w-full max-w-[90%] sm:max-w-[400px] md:max-w-md"
         >
-          {/* Logo - responsive size */}
+          {/* Logo - kích thước responsive */}
           <div className="flex justify-center mb-6 sm:mb-8">
             <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/20 border border-white/10">
               <svg
@@ -71,39 +144,62 @@ const SignIn = () => {
             </div>
           </div>
 
-          {/* Card - responsive padding and sizing */}
+          {/* Card - padding và kích thước responsive */}
           <div className="bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/30 overflow-hidden border border-white/10">
-            {/* Header - responsive text sizes and padding */}
+            {/* Header - kích thước text và padding responsive */}
             <div className="px-5 sm:px-6 md:px-8 pt-6 sm:pt-7 md:pt-8 pb-3 sm:pb-4">
               <h1 className="text-2xl sm:text-2xl md:text-3xl font-bold text-white text-center">
-                Welcome back
+                Chào mừng trở lại
               </h1>
               <p className="mt-1 sm:mt-2 text-center text-sm sm:text-base text-gray-300">
-                Sign in to connect with your network
+                Đăng nhập để kết nối với mạng lưới của bạn
               </p>
             </div>
 
-            {/* Form - responsive spacing */}
+            {/* Form - khoảng cách responsive */}
             <div className="p-5 sm:p-6 md:p-8">
-              <form className="space-y-4 sm:space-y-5 md:space-y-6">
+              <form
+                className="space-y-4 sm:space-y-5 md:space-y-6"
+                onSubmit={handleSubmit}
+              >
+                {apiError && (
+                  <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/30">
+                    <p className="text-red-400 text-sm flex items-center">
+                      <AlertCircle size={14} className="mr-2" /> {apiError}
+                    </p>
+                  </div>
+                )}
+
                 <div className="space-y-3 sm:space-y-4">
-                  {/* Email Input */}
+                  {/* Input Username */}
                   <div>
                     <div className="group relative">
                       <Input
-                        type="email"
-                        placeholder="Email or username"
+                        type="text"
+                        name="username"
+                        value={formData.username}
+                        onChange={handleChange}
+                        placeholder="Email hoặc tên đăng nhập"
                         className="h-10 sm:h-11 md:h-12 px-4 sm:px-5 w-full bg-white/5 border-0 rounded-lg sm:rounded-xl text-gray-100 text-sm sm:text-base placeholder:text-gray-400 transition-all duration-300 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 focus-visible:border-indigo-400"
                       />
                     </div>
+                    {errors.username && (
+                      <p className="text-red-400 text-xs flex items-center mt-1 sm:mt-2 pl-2">
+                        <AlertCircle size={10} className="sm:w-3 sm:h-3 mr-1" />
+                        {errors.username}
+                      </p>
+                    )}
                   </div>
 
-                  {/* Password Input */}
+                  {/* Input Mật khẩu */}
                   <div>
                     <div className="group relative">
                       <Input
                         type={showPassword ? "text" : "password"}
-                        placeholder="Password"
+                        name="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        placeholder="Mật khẩu"
                         className="h-10 sm:h-11 md:h-12 px-4 sm:px-5 w-full bg-white/5 border-0 rounded-lg sm:rounded-xl text-gray-100 text-sm sm:text-base placeholder:text-gray-400 transition-all duration-300 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 focus-visible:border-indigo-400"
                       />
                       <button
@@ -118,11 +214,17 @@ const SignIn = () => {
                         )}
                       </button>
                     </div>
+                    {errors.password && (
+                      <p className="text-red-400 text-xs flex items-center mt-1 sm:mt-2 pl-2">
+                        <AlertCircle size={10} className="sm:w-3 sm:h-3 mr-1" />
+                        {errors.password}
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                {/* Remember me and Forgot password - responsive layout */}
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+                {/* Ghi nhớ đăng nhập và Quên mật khẩu - layout responsive */}
+                {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                   <div className="flex items-center">
                     <div className="relative h-4 w-4 sm:h-5 sm:w-5">
                       <input
@@ -148,27 +250,33 @@ const SignIn = () => {
                       htmlFor="remember"
                       className="ml-2 text-xs sm:text-sm text-gray-300"
                     >
-                      Remember me
+                      Lưu tên đăng nhập
                     </label>
                   </div>
                   <Link
                     to={ROUTES.AUTH.FORGOT_PASSWORD}
                     className="text-xs sm:text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors duration-200"
                   >
-                    Forgot password?
+                    Quên mật khẩu?
                   </Link>
-                </div>
+                </div> */}
 
                 {/* Main Sign In Button - responsive height */}
                 <div>
-                  <Link to={ROUTES.HOME} className="block w-full">
-                    <button className="relative cursor-pointer hover:opacity-80 w-full h-10 sm:h-11 md:h-12 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg sm:rounded-xl font-medium text-sm sm:text-base overflow-hidden transition-all duration-300">
-                      {/* Background gradient */}
-                      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-indigo-500 to-purple-600"></span>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="relative cursor-pointer hover:opacity-80 w-full h-10 sm:h-11 md:h-12 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg sm:rounded-xl font-medium text-sm sm:text-base overflow-hidden transition-all duration-300"
+                  >
+                    {/* Background gradient */}
+                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-indigo-500 to-purple-600"></span>
 
-                      {/* Button text and icon */}
-                      <span className="relative z-10 flex items-center justify-center">
-                        <span className="mr-2">Sign in</span>
+                    {/* Button text and icon */}
+                    <span className="relative z-10 flex items-center justify-center">
+                      <span className="mr-2">
+                        {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
+                      </span>
+                      {!isSubmitting && (
                         <svg
                           className="h-4 w-4 sm:h-5 sm:w-5"
                           fill="none"
@@ -182,9 +290,9 @@ const SignIn = () => {
                             d="M14 5l7 7m0 0l-7 7m7-7H3"
                           />
                         </svg>
-                      </span>
-                    </button>
-                  </Link>
+                      )}
+                    </span>
+                  </button>
                 </div>
 
                 {/* Divider - responsive spacing */}
@@ -199,10 +307,10 @@ const SignIn = () => {
                       {/* Text content with gradient */}
                       <span className="relative z-10 flex items-center gap-1 sm:gap-2 cursor-default">
                         <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent group-hover:from-indigo-300 group-hover:to-purple-300 transition-all duration-300">
-                          Or
+                          Hoặc
                         </span>
                         <span className="group-hover:text-white transition-colors duration-300">
-                          continue with
+                          Tiếp tục với
                         </span>
                       </span>
                     </span>
@@ -279,12 +387,12 @@ const SignIn = () => {
             {/* Sign Up Link - responsive text size */}
             <div className="px-5 sm:px-6 md:px-8 pb-5 sm:pb-6 md:pb-8 text-center">
               <p className="text-xs sm:text-sm text-gray-300">
-                Don't have an account?{" "}
+                Không có tài khoản?{" "}
                 <Link
                   to={ROUTES.AUTH.SIGN_UP}
                   className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors duration-200"
                 >
-                  Create an account
+                  Tạo tài khoản
                 </Link>
               </p>
             </div>
@@ -293,7 +401,7 @@ const SignIn = () => {
           {/* Footer - responsive spacing and text size */}
           <div className="mt-5 sm:mt-6 md:mt-8 text-center">
             <div className="flex justify-center space-x-4 sm:space-x-6 text-xs sm:text-sm text-gray-400">
-              {["Terms", "Privacy", "Cookies"].map((item, index) => (
+              {["Điều khoản", "Quyền riêng tư", "Cookie"].map((item, index) => (
                 <Link
                   key={index}
                   to="#"

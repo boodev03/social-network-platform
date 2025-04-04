@@ -3,6 +3,8 @@ import React, { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ROUTES } from "../../constants/routes";
 import CreatePostDialog from "../createPost/CreatePost";
+import { useAuth } from "@/providers/AuthProvider";
+import { toast } from "sonner";
 
 import {
   DropdownMenu,
@@ -22,11 +24,17 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
+  const { logout } = useAuth();
   const isActive = (path: string) => location.pathname === path;
 
-  const handleLogout = () => {
-    // Implement logout functionality here
-    console.log("Logging out...");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Đăng xuất thành công!");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Đã xảy ra lỗi khi đăng xuất. Vui lòng thử lại.");
+    }
   };
 
   return (

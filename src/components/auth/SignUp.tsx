@@ -1,33 +1,36 @@
-import { useState } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Input } from "@/components/ui/input";
-import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { register } from "@/services/user";
 import { motion } from "framer-motion";
-import { AtSign, Eye, EyeOff, Lock, User, AlertCircle } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const SignUp = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",
-    email: "",
     password: "",
     confirmPassword: "",
+    email: "",
   });
   const [errors, setErrors] = useState({
     username: "",
-    email: "",
     password: "",
     confirmPassword: "",
+    email: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [apiError, setApiError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear error when user starts typing
     if (errors[name as keyof typeof errors]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -37,40 +40,35 @@ const SignUp = () => {
     let isValid = true;
     const newErrors = { ...errors };
 
-    // Username validation
     if (!formData.username.trim()) {
-      newErrors.username = "Username is required";
+      newErrors.username = "Vui lòng nhập tên người dùng";
       isValid = false;
     } else if (formData.username.length < 3) {
-      newErrors.username = "Username must be at least 3 characters";
+      newErrors.username = "Tên người dùng phải có ít nhất 3 ký tự";
       isValid = false;
     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
-      isValid = false;
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Please enter a valid email";
-      isValid = false;
-    }
-
-    // Password validation
     if (!formData.password) {
-      newErrors.password = "Password is required";
+      newErrors.password = "Vui lòng nhập mật khẩu";
       isValid = false;
     } else if (formData.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters";
+      newErrors.password = "Mật khẩu phải có ít nhất 8 ký tự";
       isValid = false;
     }
 
-    // Confirm password validation
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
+      newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
       isValid = false;
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
+      newErrors.confirmPassword = "Mật khẩu không khớp";
+      isValid = false;
+    }
+
+    if (!formData.email.trim()) {
+      newErrors.email = "Vui lòng nhập email";
+      isValid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Email không hợp lệ";
       isValid = false;
     }
 
@@ -84,16 +82,26 @@ const SignUp = () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
+    setApiError("");
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // For now, just redirect to sign in page
-      // In a real app, you would handle the API response here
-      navigate(ROUTES.AUTH.SIGN_IN);
-    } catch (error) {
-      console.error("Sign up failed:", error);
+      const response = await register(
+        formData.username,
+        formData.password,
+        formData.email
+      );
+      toast.success(response.message);
+      setTimeout(() => {
+        navigate(ROUTES.AUTH.SIGN_IN);
+      }, 1000);
+    } catch (error: any) {
+      console.error("Đăng ký thất bại:", error);
+      toast.error(error.message);
+      if (error.message) {
+        setApiError(error.message);
+      } else {
+        setApiError("Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại sau.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -101,11 +109,9 @@ const SignUp = () => {
 
   return (
     <div className="min-h-screen w-full flex flex-col relative overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-indigo-950">
-      {/* Modern social platform background elements */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-indigo-400/10 via-transparent to-transparent"></div>
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-purple-400/10 via-transparent to-transparent"></div>
 
-      {/* Connection lines - social network concept */}
       <div className="absolute inset-0 overflow-hidden opacity-10">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -133,7 +139,6 @@ const SignUp = () => {
         </svg>
       </div>
 
-      {/* Floating elements representing social connections - responsive sizes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 right-1/4 w-32 sm:w-48 md:w-64 rounded-full bg-gradient-to-r from-indigo-500/10 to-purple-500/10 blur-3xl"></div>
         <div className="absolute bottom-1/4 left-1/4 w-32 sm:w-48 md:w-64 rounded-full bg-gradient-to-r from-blue-500/10 to-indigo-500/10 blur-3xl"></div>
@@ -147,7 +152,6 @@ const SignUp = () => {
           transition={{ duration: 0.8 }}
           className="w-full max-w-[90%] sm:max-w-[400px] md:max-w-md"
         >
-          {/* Logo - responsive size */}
           <div className="flex justify-center mb-6 sm:mb-8">
             <div className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg shadow-indigo-500/20 border border-white/10">
               <svg
@@ -162,24 +166,29 @@ const SignUp = () => {
             </div>
           </div>
 
-          {/* Card - responsive padding and sizing */}
           <div className="bg-white/10 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/30 overflow-hidden border border-white/10">
-            {/* Header - responsive text sizes and padding */}
             <div className="px-5 sm:px-6 md:px-8 pt-6 sm:pt-7 md:pt-8 pb-3 sm:pb-4">
               <h1 className="text-2xl sm:text-2xl md:text-3xl font-bold text-white text-center">
-                Join our network
+                Tham gia mạng lưới của chúng tôi
               </h1>
               <p className="mt-1 sm:mt-2 text-center text-sm sm:text-base text-gray-300">
-                Create an account to connect with friends
+                Tạo tài khoản để kết nối với bạn bè
               </p>
             </div>
 
-            {/* Form - responsive spacing */}
             <div className="p-5 sm:p-6 md:p-8">
               <form
                 onSubmit={handleSubmit}
                 className="space-y-4 sm:space-y-5 md:space-y-6"
               >
+                {apiError && (
+                  <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/30">
+                    <p className="text-red-400 text-sm flex items-center">
+                      <AlertCircle size={14} className="mr-2" /> {apiError}
+                    </p>
+                  </div>
+                )}
+
                 <div className="space-y-3 sm:space-y-4">
                   {/* Username Input */}
                   <div>
@@ -192,7 +201,7 @@ const SignUp = () => {
                         name="username"
                         value={formData.username}
                         onChange={handleChange}
-                        placeholder="Username"
+                        placeholder="Tên người dùng"
                         type="text"
                         autoCapitalize="none"
                         autoCorrect="off"
@@ -211,7 +220,7 @@ const SignUp = () => {
                   <div>
                     <div className="group relative">
                       <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
-                        <AtSign size={16} className="sm:w-[18px] sm:h-[18px]" />
+                        <Mail size={16} className="sm:w-[18px] sm:h-[18px]" />
                       </div>
                       <Input
                         id="email"
@@ -221,14 +230,13 @@ const SignUp = () => {
                         placeholder="Email"
                         type="email"
                         autoCapitalize="none"
-                        autoComplete="email"
                         autoCorrect="off"
                         className="h-10 sm:h-11 md:h-12 pl-10 sm:pl-12 pr-4 sm:pr-5 w-full bg-white/5 border-0 rounded-lg sm:rounded-xl text-gray-100 text-sm sm:text-base placeholder:text-gray-400 transition-all duration-300 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 focus-visible:border-indigo-400"
                       />
                     </div>
                     {errors.email && (
                       <p className="text-red-400 text-xs flex items-center mt-1 sm:mt-2 pl-2">
-                        <AlertCircle size={10} className="sm:w-3 sm:h-3 mr-1" />{" "}
+                        <AlertCircle size={10} className="sm:w-3 sm:h-3 mr-1" />
                         {errors.email}
                       </p>
                     )}
@@ -246,7 +254,7 @@ const SignUp = () => {
                         value={formData.password}
                         onChange={handleChange}
                         type={showPassword ? "text" : "password"}
-                        placeholder="Password"
+                        placeholder="Mật khẩu"
                         className="h-10 sm:h-11 md:h-12 pl-10 sm:pl-12 pr-10 sm:pr-12 w-full bg-white/5 border-0 rounded-lg sm:rounded-xl text-gray-100 text-sm sm:text-base placeholder:text-gray-400 transition-all duration-300 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 focus-visible:border-indigo-400"
                       />
                       <button
@@ -284,7 +292,7 @@ const SignUp = () => {
                         value={formData.confirmPassword}
                         onChange={handleChange}
                         type={showConfirmPassword ? "text" : "password"}
-                        placeholder="Confirm Password"
+                        placeholder="Xác nhận mật khẩu"
                         className="h-10 sm:h-11 md:h-12 pl-10 sm:pl-12 pr-10 sm:pr-12 w-full bg-white/5 border-0 rounded-lg sm:rounded-xl text-gray-100 text-sm sm:text-base placeholder:text-gray-400 transition-all duration-300 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 focus-visible:border-indigo-400"
                       />
                       <button
@@ -327,8 +335,8 @@ const SignUp = () => {
                     <span className="relative z-10 flex items-center justify-center">
                       <span className="mr-2">
                         {isSubmitting
-                          ? "Creating Account..."
-                          : "Create Account"}
+                          ? "Đang tạo tài khoản..."
+                          : "Tạo tài khoản"}
                       </span>
                       {!isSubmitting && (
                         <svg
@@ -361,10 +369,10 @@ const SignUp = () => {
                       {/* Text content with gradient */}
                       <span className="relative z-10 flex items-center gap-1 sm:gap-2 cursor-default">
                         <span className="bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent group-hover:from-indigo-300 group-hover:to-purple-300 transition-all duration-300">
-                          Or
+                          Hoặc
                         </span>
                         <span className="group-hover:text-white transition-colors duration-300">
-                          continue with
+                          Tiếp tục với
                         </span>
                       </span>
                     </span>
@@ -441,12 +449,12 @@ const SignUp = () => {
             {/* Sign In Link - responsive text size */}
             <div className="px-5 sm:px-6 md:px-8 pb-5 sm:pb-6 md:pb-8 text-center">
               <p className="text-xs sm:text-sm text-gray-300">
-                Already have an account?{" "}
+                Đã có tài khoản?{" "}
                 <Link
                   to={ROUTES.AUTH.SIGN_IN}
                   className="font-medium text-indigo-400 hover:text-indigo-300 transition-colors duration-200"
                 >
-                  Sign in
+                  Đăng nhập
                 </Link>
               </p>
             </div>
@@ -455,7 +463,7 @@ const SignUp = () => {
           {/* Footer - responsive spacing and text size */}
           <div className="mt-5 sm:mt-6 md:mt-8 text-center">
             <div className="flex justify-center space-x-4 sm:space-x-6 text-xs sm:text-sm text-gray-400">
-              {["Terms", "Privacy", "Cookies"].map((item, index) => (
+              {["Điều khoản", "Quyền riêng tư", "Cookie"].map((item, index) => (
                 <Link
                   key={index}
                   to="#"
