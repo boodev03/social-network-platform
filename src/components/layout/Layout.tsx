@@ -1,7 +1,10 @@
+import { Bell, Home, LogOut, PlusSquare, Search, User } from "lucide-react";
 import React, { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Home, Search, PlusSquare, Bell, User, LogOut } from "lucide-react";
 import { ROUTES } from "../../constants/routes";
+import CreatePostDialog from "../createPost/CreatePost";
+import { useAuth } from "@/providers/AuthProvider";
+import { toast } from "sonner";
 
 import {
   DropdownMenu,
@@ -9,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 
 // These imports will be needed when you install the packages
 // import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -20,11 +24,17 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
+  const { logout } = useAuth();
   const isActive = (path: string) => location.pathname === path;
 
-  const handleLogout = () => {
-    // Implement logout functionality here
-    console.log("Logging out...");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Đăng xuất thành công!");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Đã xảy ra lỗi khi đăng xuất. Vui lòng thử lại.");
+    }
   };
 
   return (
@@ -71,12 +81,44 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               className={isActive(ROUTES.HOME) ? "text-black" : "text-gray-500"}
             />
           </Link>
-          <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
+
+          {/* <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
             <Search size={28} strokeWidth={2} className="text-gray-500" />
-          </button>
-          <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
+          </button> */}
+          <Link
+            to={ROUTES.SEARCH}
+            className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 ${
+              isActive(ROUTES.SEARCH) ? "bg-black/10" : ""
+            }`}
+          >
+            <Search
+              size={28}
+              strokeWidth={2}
+              className={
+                isActive(ROUTES.SEARCH) ? "text-black" : "text-gray-500"
+              }
+            />
+          </Link>
+
+          {/* <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
             <PlusSquare size={28} strokeWidth={2} className="text-gray-500" />
+          </button> */}
+          <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
+            <Dialog>
+              <DialogTrigger asChild>
+                <PlusSquare
+                  size={28}
+                  strokeWidth={2}
+                  className="text-gray-500"
+                />
+              </DialogTrigger>
+
+              <DialogContent className="sm:max-w-[680px]">
+                <CreatePostDialog />
+              </DialogContent>
+            </Dialog>
           </button>
+
           <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
             <Bell size={28} strokeWidth={2} className="text-gray-500" />
           </button>
@@ -133,7 +175,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       {/* Main Content */}
-      <div className="ml-16 md:ml-20">
+      <div className="ml-0">
         {/* Header for mobile - only shown on smaller screens */}
         <header className="md:hidden border-b border-gray-200 sticky top-0 bg-white z-10 px-4 py-3">
           <div className="flex justify-center">
@@ -165,7 +207,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </header>
 
         {/* Content Area */}
-        <div className="max-w-2xl mx-auto">{children}</div>
+        <div>{children}</div>
       </div>
     </div>
   );
