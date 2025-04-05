@@ -8,7 +8,10 @@ interface AvatarUploaderProps {
   onAvatarChange: (newAvatar: string | null) => void;
 }
 
-export default function AvatarUploader({ avatar }: AvatarUploaderProps) {
+export default function AvatarUploader({
+  avatar,
+}: // onAvatarChange,
+AvatarUploaderProps) {
   const [showAvatarOptions, setShowAvatarOptions] = useState<boolean>(false);
 
   // const handleUploadAvatar = (event: React.ChangeEvent<HTMLInputElement>) => {

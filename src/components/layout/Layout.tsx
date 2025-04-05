@@ -3,6 +3,8 @@ import React, { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ROUTES } from "../../constants/routes";
 import CreatePostDialog from "../createPost/CreatePost";
+import { useAuth } from "@/providers/AuthProvider";
+import { toast } from "sonner";
 
 import {
   DropdownMenu,
@@ -22,11 +24,17 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
+  const { logout } = useAuth();
   const isActive = (path: string) => location.pathname === path;
 
-  const handleLogout = () => {
-    // Implement logout functionality here
-    console.log("Logging out...");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success("Đăng xuất thành công!");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Đã xảy ra lỗi khi đăng xuất. Vui lòng thử lại.");
+    }
   };
 
   return (
@@ -105,7 +113,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 />
               </DialogTrigger>
 
-              <DialogContent>
+              <DialogContent className="sm:max-w-[680px]">
                 <CreatePostDialog />
               </DialogContent>
             </Dialog>
@@ -167,7 +175,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       {/* Main Content */}
-      <div className="ml-16 md:ml-20">
+      <div className="ml-0">
         {/* Header for mobile - only shown on smaller screens */}
         <header className="md:hidden border-b border-gray-200 sticky top-0 bg-white z-10 px-4 py-3">
           <div className="flex justify-center">
@@ -199,7 +207,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </header>
 
         {/* Content Area */}
-        <div className="max-w-2xl mx-auto">{children}</div>
+        <div>{children}</div>
       </div>
     </div>
   );

@@ -93,7 +93,7 @@ export default function FollowersList({ username }: FollowersListProps) {
         </div>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md w-full bg-white rounded-lg shadow-lg p-4">
+      <DialogContent className="sm:max-w-[680px] w-full bg-white rounded-lg shadow-lg p-4">
         {/* Tiêu đề thay đổi theo tab */}
         <h2 className="text-lg font-bold text-center pb-2 border-b">
           {activeTab === "followers" ? "Người theo dõi" : "Đang theo dõi"}

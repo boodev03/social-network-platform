@@ -33,7 +33,7 @@ export default function EditProfile({
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-[360px] w-full p-4 rounded-lg shadow-md">
+      <DialogContent className="sm:max-w-[680px] w-full p-4 rounded-lg shadow-md">
         <div className="grid grid-cols-2 items-center gap-3 border-b border-gray-400 pb-2">
           <div>
             <label className="text-xs text-gray-600">Tên</label>

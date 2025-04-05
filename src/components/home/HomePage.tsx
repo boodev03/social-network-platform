@@ -5,7 +5,7 @@ const HomePage = () => {
   return (
     <Layout>
       <div className="w-full h-full bg-gray-50 min-h-screen">
-        <div className="max-w-3xl mx-auto h-full">
+        <div className="max-w-4xl mx-auto h-full">
           <Feed />
         </div>
       </div>

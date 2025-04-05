@@ -36,7 +36,7 @@ export default function ProfilePage() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-white text-black p-4">
       <p className="font-bold p-4">Trang cá nhân</p>
-      <Card className="w-full max-w-2xl p-6 rounded-xl shadow-lg">
+      <Card className="w-full max-w-4xl p-6 rounded-xl shadow-lg">
         <div className="flex items-start justify-between">
           {/* Thông tin cơ bản */}
           <div className="flex flex-col gap-2">
@@ -104,7 +104,7 @@ export default function ProfilePage() {
                   </div>
                 </DialogTrigger>
 
-                <DialogContent>
+                <DialogContent className="sm:max-w-[680px]">
                   <CreatePostDialog />
                 </DialogContent>
               </Dialog>
