@@ -8,9 +8,11 @@ import CreatePostDialog from "../createPost/CreatePost";
 import EditProfile from "./editProfile/EditProfile"; // Import modal EditProfile
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
+import AvatarUploader from "./editProfile/AvatarUploader";
+
 export default function ProfilePage() {
-  const name: string = "Huyền Trân";
   const username: string = "chaanz.ie";
+  const [name, setName] = useState<string>("Huyền Trân");
   const [bio, setBio] = useState<string>(
     "Cứ dịu dàng, cứ chân thành vui vẻ\nCứ yêu đời, đời cũng sẽ yêu ta."
   );
@@ -18,20 +20,27 @@ export default function ProfilePage() {
     "https://www.facebook.com/nhully.tran"
   );
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [avatar, setAvatar] = useState<string>(
+  const [avatar, setAvatar] = useState<string | null>(
     "https://www.caythuocdangian.com/wp-content/uploads/anh-dai-dien-61.jpg"
   );
 
   const handleSaveProfile = (
+    newName: string,
     newBio: string,
     newLink: string,
     newAvatar?: string | null
   ) => {
+    setName(newName);
     setBio(newBio);
     setLink(newLink);
     setAvatar(newAvatar ?? "");
     setIsEditing(false);
   };
+
+    // Callback to handle avatar change
+    const handleAvatarChange = (newAvatar: string | null) => {
+      setAvatar(newAvatar);
+    };
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-white text-black p-4">
@@ -59,13 +68,15 @@ export default function ProfilePage() {
           </div>
 
           {/* Avatar */}
-          <Avatar className="w-30 h-30 border border-gray-400">
+          {/* <Avatar className="w-30 h-30 border border-gray-400">
             <AvatarImage
               src={avatar ?? undefined}
               alt="User Avatar"
               style={{ objectFit: "cover" }}
             />
-          </Avatar>
+          </Avatar> */}
+          {/* Avatar */}
+          <AvatarUploader avatar={avatar} onAvatarChange={handleAvatarChange} />
         </div>
 
         {/* Button mở modal EditProfile */}
@@ -94,7 +105,7 @@ export default function ProfilePage() {
             {/* Create Post Box */}
             <div className="flex items-center gap-2 my-4">
               <Avatar className="w-10 h-10">
-                <AvatarImage src={avatar} alt="User Avatar" />
+                <AvatarImage src={avatar ?? ''} alt="User Avatar" />
               </Avatar>
 
               <Dialog>

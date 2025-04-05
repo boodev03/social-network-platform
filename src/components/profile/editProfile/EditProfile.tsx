@@ -3,57 +3,45 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Lock } from "lucide-react";
-import AvatarUploader from "./AvatarUploader";
 
 interface EditProfileProps {
   name: string;
   username: string;
   bio: string;
   link: string;
-  onSave: (bio: string, link: string, avatar?: string) => void;
+  onSave: (name: string, bio: string, link: string) => void;
   onClose: () => void;
 }
 
 export default function EditProfile({
-  name,
   username,
+  name,
   bio,
   link,
   onSave,
   onClose,
 }: EditProfileProps) {
+  const [newName, setNewName] = useState<string>(name);
   const [newBio, setNewBio] = useState<string>(bio);
   const [newLink, setNewLink] = useState<string>(link);
-  const [avatar, setAvatar] = useState<string | null>(
-    "https://www.caythuocdangian.com/wp-content/uploads/anh-dai-dien-61.jpg"
-  );
+
   const [isEditingLink, setIsEditingLink] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState<boolean>(false);
 
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[680px] w-full p-4 rounded-lg shadow-md">
-        <div className="grid grid-cols-2 items-center gap-3 border-b border-gray-400 pb-2">
-          <div>
-            <label className="text-xs text-gray-600">Tên</label>
-            <div className="relative flex items-center">
-              <Lock className="absolute left-2 w-4 h-4 text-gray-500" />
-              <Input
-                value={`${name} (@${username})`}
-                readOnly
-                className="w-full text-sm text-gray-900 pl-7 py-1 border-none bg-transparent focus:ring-0"
-              />
-            </div>
-          </div>
-
-          {/* Avatar Uploader Component */}
-          <AvatarUploader
-            name={name}
-            avatar={avatar}
-            onAvatarChange={setAvatar}
+        <p className="text-sm text-gray-500 mt-2">@{username}</p>
+        {/* Input Tên (không căn giữa) */}
+        <div className="border-b border-gray-400 pb-2">
+          <label className="text-xs text-gray-600">Tên</label>
+          <Input
+            value={newName}
+            onChange={(e) => setNewName(e.target.value)}
+            className="w-full text-sm text-gray-900 py-1 border-none bg-transparent focus:ring-0"
           />
         </div>
+
 
         <div className="mt-3 border-b border-gray-400 pb-2">
           <label className="text-xs text-gray-600">Tiểu sử</label>
@@ -124,7 +112,7 @@ export default function EditProfile({
         <Button
           className="w-full mt-3 bg-black text-white text-sm py-2 hover:bg-gray-800"
           onClick={() => {
-            onSave(newBio, newLink, avatar ?? "");
+            onSave(newName, newBio, newLink);
             onClose();
           }}
         >

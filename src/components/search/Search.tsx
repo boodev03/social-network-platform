@@ -48,10 +48,6 @@ export default function Search() {
                   <div>
                     <p className="font-semibold">{user.username}</p>
                     <p className="text-sm text-gray-500">{user.name}</p>
-                    <p className="text-sm">{user.bio}</p>
-                    <p className="text-sm text-gray-400">
-                      {user.followers.toLocaleString()} người theo dõi
-                    </p>
                   </div>
                 </div>
 

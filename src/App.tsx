@@ -11,6 +11,7 @@ import Layout from "./components/layout/Layout";
 import "./App.css";
 import Feed from "./components/feed/Feed";
 import PostDetail from "./components/feed/PostDetail/PostDetail";
+import Notification from "./components/notification/Notification";
 
 function App() {
   return (
@@ -34,6 +35,7 @@ function App() {
           <Route path={ROUTES.HOME} element={<HomePage />} />
           <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
           <Route path={ROUTES.SEARCH} element={<Search />} />
+          <Route path={ROUTES.NOTIFICATION} element={<Notification />} />
         </Route>
         <Route path="/" element={<Feed />} />
         <Route path="/posts/:id" element={<PostDetail />} />

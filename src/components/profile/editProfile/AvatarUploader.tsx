@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Avatar, AvatarImage} from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 interface AvatarUploaderProps {
-  name: string;
   avatar: string | null;
   onAvatarChange: (newAvatar: string | null) => void;
 }
@@ -31,36 +30,63 @@ export default function AvatarUploader({
   //   setShowAvatarOptions(false);
   // };
 
+  const handleClose = () => setShowAvatarOptions(false);
+
   return (
     <div className="relative flex justify-end mr-9">
+      {/* Avatar click để mở menu */}
       <div
         className="cursor-pointer"
         onClick={() => setShowAvatarOptions(!showAvatarOptions)}
       >
-        <Avatar className="w-16 h-16 border border-gray-400">
-          <AvatarImage src={avatar ?? undefined} alt="User Avatar" style={{objectFit: "cover"}}/>
+        <Avatar className="w-30 h-30 border border-gray-400">
+          <AvatarImage src={avatar ?? undefined} alt="User Avatar" style={{ objectFit: "cover" }} />
         </Avatar>
       </div>
 
       {showAvatarOptions && (
-        <div className="absolute left-1/2 mt-17 transform -translate-x-1/2 mt-3 w-[140px] bg-white border border-gray-300 p-3 rounded-lg shadow-md z-50">
-          <label className="text-xs w-full flex justify-center items-center px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100">
-            Tải ảnh lên
-            {/* <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleUploadAvatar}
-            /> */}
-          </label>
-          <Button
-            variant="ghost"
-            className="text-xs w-full text-left px-3 py-2 rounded-md hover:bg-gray-100"
-            // onClick={handleRemoveAvatar}
+        <>
+          {/* Overlay để bắt sự kiện click ra ngoài */}
+          <div
+            className="fixed inset-0 z-40"
+            onClick={handleClose} // Bấm ra ngoài thì đóng
+          />
+
+          {/* Menu avatar */}
+          <div
+            className="absolute left-0 top-full mt-2 w-[140px] bg-white border border-gray-300 p-2 rounded-lg shadow-md z-50"
+            onClick={(e) => e.stopPropagation()} // Ngăn sự kiện lan ra ngoài
           >
-            Gỡ ảnh xuống
-          </Button>
-        </div>
+            {/* Tải ảnh lên */}
+            <label className="block text-xs w-full pl-3 py-2 rounded-md cursor-pointer hover:bg-gray-100 text-left">
+              Tải ảnh lên
+              {/* <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleUploadAvatar}
+              /> */}
+            </label>
+
+            {/* Gỡ ảnh xuống */}
+            <Button
+              variant="ghost"
+              className="block text-xs w-full pl-3 py-2 rounded-md cursor-pointer hover:bg-gray-100 text-left"
+            // onClick={handleRemoveAvatar}
+            >
+              Gỡ ảnh xuống
+            </Button>
+
+            {/* Đóng (màu đỏ) */}
+            <Button
+              variant="ghost"
+              className="block text-xs w-full pl-3 py-2 rounded-md cursor-pointer text-red-500 hover:bg-gray-100 hover:text-red-500 text-left"
+              onClick={handleClose}
+            >
+              Đóng
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );
