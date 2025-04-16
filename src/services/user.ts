@@ -13,13 +13,29 @@ interface RegisterResponse {
 }
 
 interface LoginResponse {
-    success: boolean;
-    message: string;
-    token: string;
+    data: {
+        success: boolean;
+        message: string;
+        accessToken: string;
+        data: {
+            username: string;
+            id: string;
+        };
+    }
+
+}
+
+interface UserProfile {
     data: {
         id: string;
         username: string;
-    };
+        email: string;
+        fullname: string;
+        link: string;
+        bio: string;
+        avatar: string;
+    }
+
 }
 
 interface LogoutResponse {
@@ -27,16 +43,16 @@ interface LogoutResponse {
     message: string;
 }
 
-
 export const register = async (
     username: string,
+    fullname: string,
     password: string,
     email: string
 ): Promise<RegisterResponse> => {
     try {
         const response = await axios.post<RegisterResponse>(
             `${API_URL}/users/register`,
-            { username, password, email }
+            { username, password, email, fullname }
         );
         return response.data;
     } catch (error) {
@@ -62,8 +78,8 @@ export const login = async (
             { username, password }
         );
 
-        if (response.data.token) {
-            localStorage.setItem('token', response.data.token);
+        if (response.data.data.accessToken) {
+            localStorage.setItem('token', response.data.data.accessToken);
         }
 
         return response.data;
@@ -79,6 +95,35 @@ export const login = async (
         }
     }
 };
+
+
+export const getMe = async (): Promise<UserProfile> => {
+    try {
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('Không tìm thấy token đăng nhập');
+        }
+
+        const response = await axios.get<UserProfile>(`${API_URL}/users/profile`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            throw error.response.data;
+        } else {
+            throw {
+                success: false,
+                message: 'Đã xảy ra lỗi khi lấy thông tin người dùng. Vui lòng thử lại sau.',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            };
+        }
+    }
+}
 
 export const logout = async (): Promise<LogoutResponse> => {
     try {
@@ -114,6 +159,23 @@ export const logout = async (): Promise<LogoutResponse> => {
     }
 };
 
+export const getUserProfile = async (userId: string): Promise<UserProfile> => {
+    try {
+        const response = await axios.get<UserProfile>(`${API_URL}/users/${userId}`);
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            throw error.response.data;
+        } else {
+            throw {
+                success: false,
+                message: 'Không thể lấy thông tin người dùng.',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            };
+        }
+    }
+};
+
 axios.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
@@ -126,3 +188,4 @@ axios.interceptors.request.use(
         return Promise.reject(error);
     }
 );
+

@@ -7,27 +7,26 @@ import { Lock } from "lucide-react";
 import AvatarUploader from "./AvatarUploader";
 
 interface EditProfileProps {
-  name: string;
   username: string;
+  fullname: string;
+  avatar: string;
   bio: string;
   link: string;
-  onSave: (bio: string, link: string, avatar?: string) => void;
   onClose: () => void;
 }
 
 export default function EditProfile({
-  name,
   username,
+  fullname,
+  avatar,
   bio,
   link,
-  onSave,
-  onClose,
+  onClose
 }: EditProfileProps) {
+
   const [newBio, setNewBio] = useState<string>(bio);
   const [newLink, setNewLink] = useState<string>(link);
-  const [avatar, setAvatar] = useState<string | null>(
-    "https://www.caythuocdangian.com/wp-content/uploads/anh-dai-dien-61.jpg"
-  );
+  const [avatarPicture, setAvatarPicture] = useState<string>(avatar);
   const [isEditingLink, setIsEditingLink] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState<boolean>(false);
 
@@ -40,7 +39,7 @@ export default function EditProfile({
             <div className="relative flex items-center">
               <Lock className="absolute left-2 w-4 h-4 text-gray-500" />
               <Input
-                value={`${name} (@${username})`}
+                value={`${fullname} (@${username})`}
                 readOnly
                 className="w-full text-sm text-gray-900 pl-7 py-1 border-none bg-transparent focus:ring-0"
               />
@@ -49,9 +48,8 @@ export default function EditProfile({
 
           {/* Avatar Uploader Component */}
           <AvatarUploader
-            name={name}
-            avatar={avatar}
-            onAvatarChange={setAvatar}
+            avatar={avatarPicture}
+            onAvatarChange={setAvatarPicture}
           />
         </div>
 
@@ -124,7 +122,6 @@ export default function EditProfile({
         <Button
           className="w-full mt-3 bg-black text-white text-sm py-2 hover:bg-gray-800"
           onClick={() => {
-            onSave(newBio, newLink, avatar ?? "");
             onClose();
           }}
         >

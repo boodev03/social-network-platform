@@ -3,9 +3,8 @@ import { Avatar, AvatarImage} from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 interface AvatarUploaderProps {
-  name: string;
   avatar: string | null;
-  onAvatarChange: (newAvatar: string | null) => void;
+  onAvatarChange: (newAvatar: string) => void;
 }
 
 export default function AvatarUploader({

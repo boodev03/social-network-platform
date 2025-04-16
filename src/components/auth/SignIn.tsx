@@ -179,7 +179,7 @@ const SignIn = () => {
                         name="username"
                         value={formData.username}
                         onChange={handleChange}
-                        placeholder="Email hoặc tên đăng nhập"
+                        placeholder="Tên đăng nhập"
                         className="h-10 sm:h-11 md:h-12 px-4 sm:px-5 w-full bg-white/5 border-0 rounded-lg sm:rounded-xl text-gray-100 text-sm sm:text-base placeholder:text-gray-400 transition-all duration-300 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 focus-visible:border-indigo-400"
                       />
                     </div>
