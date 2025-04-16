@@ -71,9 +71,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <nav className="flex flex-col items-center space-y-8 flex-1">
           <Link
             to={ROUTES.HOME}
-            className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 ${
-              isActive(ROUTES.HOME) ? "bg-black/10" : ""
-            }`}
+            className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 ${isActive(ROUTES.HOME) ? "bg-black/10" : ""
+              }`}
           >
             <Home
               size={28}
@@ -87,9 +86,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </button> */}
           <Link
             to={ROUTES.SEARCH}
-            className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 ${
-              isActive(ROUTES.SEARCH) ? "bg-black/10" : ""
-            }`}
+            className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 ${isActive(ROUTES.SEARCH) ? "bg-black/10" : ""
+              }`}
           >
             <Search
               size={28}
@@ -119,18 +117,29 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Dialog>
           </button>
 
-          <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
+          {/* <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
             <Bell size={28} strokeWidth={2} className="text-gray-500" />
-          </button>
+          </button> */}
+          <Link
+            to={ROUTES.NOTIFICATION}
+            className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 ${isActive(ROUTES.NOTIFICATION) ? "bg-black/10" : ""
+              }`}>
+            <Bell
+              size={28}
+              strokeWidth={2}
+              className={
+                isActive(ROUTES.NOTIFICATION) ? "text-black" : "text-gray-500"
+              }
+            />
+          </Link>
         </nav>
 
         <div className="mt-auto">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 block ${
-                  isActive(ROUTES.PROFILE) ? "bg-black/10" : ""
-                }`}
+                className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 block ${isActive(ROUTES.PROFILE) ? "bg-black/10" : ""
+                  }`}
               >
                 <div className="relative">
                   <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
