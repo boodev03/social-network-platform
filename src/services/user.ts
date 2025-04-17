@@ -22,7 +22,6 @@ interface LoginResponse {
             id: string;
         };
     }
-
 }
 
 interface UserProfile {
@@ -35,7 +34,18 @@ interface UserProfile {
         bio: string;
         avatar: string;
     }
+}
 
+interface UpdateProfilePayload {
+    data: {
+        id: string;
+        username: string;
+        email: string;
+        fullname: string;
+        link: string;
+        bio: string;
+        avatar: string;
+    };
 }
 
 interface LogoutResponse {
@@ -124,6 +134,36 @@ export const getMe = async (): Promise<UserProfile> => {
         }
     }
 }
+
+export const updateProfileWithFormData = async (formData: FormData): Promise<UpdateProfilePayload> => {
+    try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Không tìm thấy token đăng nhập");
+
+        const response = await axios.patch<UpdateProfilePayload>(
+            `${API_URL}/users/profile`,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data", 
+                },
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response) {
+            throw error.response.data;
+        } else {
+            throw {
+                success: false,
+                message: "Đã xảy ra lỗi khi cập nhật thông tin người dùng. Vui lòng thử lại sau.",
+                error: error instanceof Error ? error.message : "Unknown error",
+            };
+        }
+    }
+};
 
 export const logout = async (): Promise<LogoutResponse> => {
     try {
