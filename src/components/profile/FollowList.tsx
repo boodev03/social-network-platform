@@ -34,7 +34,7 @@ export default function FollowersList({ username }: FollowersListProps) {
     (user: User) => user.username === username
   );
 
-  if (!currentUser) return <div>Người dùng không tồn tại.</div>;
+  if (!currentUser) return <div className="text-sm text-gray-500 mt-2">{followersUsers.length} người theo dõi</div>;
 
   const followingList = ARRAY_LIST_USER_FL.filter(
     (follow: Follow) => follow.follower_id === currentUser._id.$oid
@@ -93,7 +93,7 @@ export default function FollowersList({ username }: FollowersListProps) {
         </div>
       </DialogTrigger>
 
-      <DialogContent className="max-w-md w-full bg-white rounded-lg shadow-lg p-4">
+      <DialogContent className="sm:max-w-[680px] w-full bg-white rounded-lg shadow-lg p-4">
         {/* Tiêu đề thay đổi theo tab */}
         <h2 className="text-lg font-bold text-center pb-2 border-b">
           {activeTab === "followers" ? "Người theo dõi" : "Đang theo dõi"}

@@ -3,62 +3,125 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Lock } from "lucide-react";
-import AvatarUploader from "./AvatarUploader";
+import { updateProfileWithFormData } from "@/services/user";
+import { Pencil } from "lucide-react";
+import { toast } from "sonner";
 
 interface EditProfileProps {
-  name: string;
   username: string;
+  fullname: string;
+  avatar: string;
   bio: string;
   link: string;
-  onSave: (bio: string, link: string, avatar?: string) => void;
   onClose: () => void;
+  onUpdate: () => void;
 }
 
 export default function EditProfile({
-  name,
   username,
+  fullname,
+  avatar,
   bio,
   link,
-  onSave,
   onClose,
+  onUpdate,
 }: EditProfileProps) {
+  const [newName, setNewName] = useState<string>(fullname);
   const [newBio, setNewBio] = useState<string>(bio);
+  const [newAvatar, setNewAvatar] = useState<File | null>(null);
   const [newLink, setNewLink] = useState<string>(link);
-  const [avatar, setAvatar] = useState<string | null>(
-    "https://www.caythuocdangian.com/wp-content/uploads/anh-dai-dien-61.jpg"
-  );
-  const [isEditingLink, setIsEditingLink] = useState(false);
-  const [showLinkModal, setShowLinkModal] = useState<boolean>(false);
+
+  const [error, setError] = useState<string | null>(null);
+
+  const isChanged = () => {
+    return newName !== fullname || newBio !== bio || newLink !== link || newAvatar !== null;
+  }
+
+  const handleUpdateProfile = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("fullname", newName);
+      formData.append("bio", newBio);
+      formData.append("link", newLink);
+
+      if (newAvatar) {
+        formData.append("file", newAvatar);
+      }
+
+      const response = await updateProfileWithFormData(formData);
+      console.log(response);
+
+      toast.success("Cập nhật hồ sơ thành công!");
+      onUpdate();  // cập nhật lại profile
+      onClose();
+    } catch (error) {
+      console.error("Update failed:", error);
+      toast.error("Cập nhật thất bại. Vui lòng thử lại sau.");
+      setError("Cập nhật thông tin thất bại. Vui lòng thử lại.");
+    }
+  };
+
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setError("Vui lòng chọn một file ảnh.");
+        return;
+      }
+      if (file.size > 5000000) {
+        setError("File ảnh quá lớn. Vui lòng chọn ảnh nhỏ hơn 5MB.");
+        return;
+      }
+
+      setNewAvatar(file);
+      event.target.value = "";
+    }
+  };
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-[360px] w-full p-4 rounded-lg shadow-md">
-        <div className="grid grid-cols-2 items-center gap-3 border-b border-gray-400 pb-2">
-          <div>
-            <label className="text-xs text-gray-600">Tên</label>
-            <div className="relative flex items-center">
-              <Lock className="absolute left-2 w-4 h-4 text-gray-500" />
+      <DialogContent className="sm:max-w-[680px] w-full p-4 rounded-lg shadow-md">
+        <div className="flex items-center justify-between">
+          {/* Left side with flex-1 */}
+          <div className="flex flex-col gap-2 flex-1">
+            <p className="text-sm text-gray-500 mt-2">@{username}</p>
+            <div className="border-b border-gray-400 pb-2">
+              <label className="text-xs text-gray-600">Tên</label>
               <Input
-                value={`${name} (@${username})`}
-                readOnly
-                className="w-full text-sm text-gray-900 pl-7 py-1 border-none bg-transparent focus:ring-0"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                className="w-full text-sm text-gray-900 py-1 border-none bg-transparent focus:ring-0"
               />
             </div>
           </div>
 
-          {/* Avatar Uploader Component */}
-          <AvatarUploader
-            name={name}
-            avatar={avatar}
-            onAvatarChange={setAvatar}
-          />
+          {/* Avatar uploader */}
+          <div className="relative ml-4 mr-10 shrink-0">
+            <img
+              key={newAvatar ? URL.createObjectURL(newAvatar) : avatar}
+              src={newAvatar ? URL.createObjectURL(newAvatar) : avatar || "/default-avatar.png"}
+              alt="avatar"
+              className="w-24 h-24 rounded-full object-cover border"
+            />
+            <label className="absolute bottom-0 right-0 bg-white border rounded-full p-1 cursor-pointer hover:bg-gray-100 transition">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="hidden"
+              />
+              <span className="text-xs text-gray-700">
+                <Pencil size={14} />
+              </span>
+            </label>
+          </div>
         </div>
 
+        {/* Tiểu sử */}
         <div className="mt-3 border-b border-gray-400 pb-2">
           <label className="text-xs text-gray-600">Tiểu sử</label>
           <Textarea
-            value={newBio}
+            value={newBio || ""}
             onChange={(e) => setNewBio(e.target.value)}
             className="text-sm h-12 border-none bg-transparent focus:ring-0"
             rows={2}
@@ -66,67 +129,25 @@ export default function EditProfile({
           />
         </div>
 
+        {/* Liên kết */}
         <div className="mt-3 border-b border-gray-400 pb-2">
           <label className="text-xs text-gray-600">Liên kết</label>
-          {isEditingLink ? (
-            <Input
-              value={newLink}
-              onChange={(e) => setNewLink(e.target.value)}
-              className="w-full mt-1 text-sm"
-              placeholder="https://link-cua-ban.com"
-            />
-          ) : (
-            <div className="flex items-center justify-between mt-1">
-              <span className="text-sm">{newLink || "Chưa có liên kết"}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsEditingLink(true)}
-              >
-                Chỉnh sửa
-              </Button>
-            </div>
-          )}
+          <Textarea
+            value={newLink || ""}
+            onChange={(e) => setNewLink(e.target.value)}
+            className="text-sm h-12 border-none bg-transparent focus:ring-0"
+            rows={2}
+            placeholder="https://link-cua-ban.com"
+          />
         </div>
 
-        {showLinkModal && (
-          <Dialog
-            open={showLinkModal}
-            onOpenChange={() => setShowLinkModal(false)}
-          >
-            <DialogContent className="max-w-[300px] p-4">
-              <label className="text-xs text-gray-600">Nhập liên kết</label>
-              <Input
-                value={newLink}
-                onChange={(e) => setNewLink(e.target.value)}
-                className="text-sm border-gray-300"
-                placeholder="https://your-link.com"
-              />
-              <div className="flex justify-end mt-2 gap-2">
-                <Button
-                  variant="ghost"
-                  className="hover:bg-gray-100 px-3 py-1 rounded-md"
-                  onClick={() => setShowLinkModal(false)}
-                >
-                  Hủy
-                </Button>
-                <Button
-                  className="bg-black text-white hover:bg-gray-800 px-3 py-1 rounded-md"
-                  onClick={() => setShowLinkModal(false)}
-                >
-                  Lưu
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
+        {/* Error message */}
+        {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
 
         <Button
           className="w-full mt-3 bg-black text-white text-sm py-2 hover:bg-gray-800"
-          onClick={() => {
-            onSave(newBio, newLink, avatar ?? "");
-            onClose();
-          }}
+          onClick={handleUpdateProfile}
+          disabled={!isChanged()}
         >
           Lưu
         </Button>

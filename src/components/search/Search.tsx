@@ -10,7 +10,7 @@ export default function Search() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-white text-black p-4">
       <p className="font-bold p-4">Tìm kiếm</p>
-      <Card className="w-full max-w-2xl p-4 rounded-xl shadow-lg">
+      <Card className="w-full max-w-4xl p-4 rounded-xl shadow-lg">
         {/* Thanh tìm kiếm */}
         <div className="flex items-center space-x-2 relative w-full">
           <Input
