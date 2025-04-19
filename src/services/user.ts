@@ -31,12 +31,13 @@ interface LogoutResponse {
 export const register = async (
     username: string,
     password: string,
-    email: string
+    email: string,
+    fullname: string
 ): Promise<RegisterResponse> => {
     try {
         const response = await axios.post<RegisterResponse>(
             `${API_URL}/users/register`,
-            { username, password, email }
+            { username, password, email, fullname }
         );
         return response.data;
     } catch (error) {

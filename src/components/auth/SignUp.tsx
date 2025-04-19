@@ -15,12 +15,14 @@ const SignUp = () => {
     password: "",
     confirmPassword: "",
     email: "",
+    fullName: "",
   });
   const [errors, setErrors] = useState({
     username: "",
     password: "",
     confirmPassword: "",
     email: "",
+    fullName: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -72,6 +74,11 @@ const SignUp = () => {
       isValid = false;
     }
 
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = "Vui lòng nhập tên";
+      isValid = false;
+    }
+
     setErrors(newErrors);
     return isValid;
   };
@@ -88,7 +95,8 @@ const SignUp = () => {
       const response = await register(
         formData.username,
         formData.password,
-        formData.email
+        formData.email,
+        formData.fullName
       );
       toast.success(response.message);
       setTimeout(() => {
@@ -238,6 +246,32 @@ const SignUp = () => {
                       <p className="text-red-400 text-xs flex items-center mt-1 sm:mt-2 pl-2">
                         <AlertCircle size={10} className="sm:w-3 sm:h-3 mr-1" />
                         {errors.email}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Full Name Input */}
+                  <div>
+                    <div className="group relative">
+                      <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                        <User size={16} className="sm:w-[18px] sm:h-[18px]" />
+                      </div>
+                      <Input
+                        id="fullName"
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        placeholder="Họ và tên"
+                        type="text"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        className="h-10 sm:h-11 md:h-12 pl-10 sm:pl-12 pr-4 sm:pr-5 w-full bg-white/5 border-0 rounded-lg sm:rounded-xl text-gray-100 text-sm sm:text-base placeholder:text-gray-400 transition-all duration-300 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 focus-visible:border-indigo-400"
+                      />
+                    </div>
+                    {errors.fullName && (
+                      <p className="text-red-400 text-xs flex items-center mt-1 sm:mt-2 pl-2">
+                        <AlertCircle size={10} className="sm:w-3 sm:h-3 mr-1" />
+                        {errors.fullName}
                       </p>
                     )}
                   </div>
