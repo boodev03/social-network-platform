@@ -62,9 +62,9 @@ const SignIn = () => {
     try {
       const response = await login(formData.username, formData.password);
       authLogin({
-        id: response.data.id,
-        username: response.data.username,
-        email: "",
+        id: response.data.data.id,
+        username: response.data.data.username,
+        email: response.data.data.email,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });

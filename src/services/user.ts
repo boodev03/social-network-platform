@@ -20,6 +20,8 @@ interface LoginResponse {
         data: {
             username: string;
             id: string;
+            email: string;
+            fullname: string;
         };
     }
 }
@@ -55,7 +57,6 @@ interface LogoutResponse {
 
 export const register = async (
     username: string,
-    fullname: string,
     password: string,
     email: string,
     fullname: string
@@ -147,7 +148,7 @@ export const updateProfileWithFormData = async (formData: FormData): Promise<Upd
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    "Content-Type": "multipart/form-data", 
+                    "Content-Type": "multipart/form-data",
                 },
             }
         );

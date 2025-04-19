@@ -106,8 +106,7 @@ const SignUp = () => {
         formData.username,
         formData.fullname,
         formData.password,
-        formData.email,
-        formData.fullName
+        formData.email
       );
       toast.success(response.message);
       setTimeout(() => {
