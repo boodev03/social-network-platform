@@ -3,7 +3,7 @@ import { useState } from "react";
 
 // import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-import CreatePostDialog from "../createPost/CreatePost";
+import CreatePostDialog from "../post/CreatePost";
 import FeedItem from "./FeedItem";
 
 import { Card } from "@/components/ui/card";
