@@ -34,7 +34,7 @@ export default function FollowersList({ username }: FollowersListProps) {
     (user: User) => user.username === username
   );
 
-  if (!currentUser) return <div>Người dùng không tồn tại.</div>;
+  if (!currentUser) return <div className="text-sm text-gray-500 mt-2">{followersUsers.length} người theo dõi</div>;
 
   const followingList = ARRAY_LIST_USER_FL.filter(
     (follow: Follow) => follow.follower_id === currentUser._id.$oid

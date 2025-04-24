@@ -21,7 +21,7 @@ const SignIn = () => {
     username: "",
     password: "",
   });
-  const [apiError, setApiError] = useState("");
+  // const [apiError, setApiError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,14 +57,14 @@ const SignIn = () => {
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    setApiError("");
+    // setApiError("");
 
     try {
       const response = await login(formData.username, formData.password);
       authLogin({
-        id: response.data.id,
-        username: response.data.username,
-        email: "",
+        id: response.data.data.id,
+        username: response.data.data.username,
+        email: response.data.data.email,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       });
@@ -73,9 +73,9 @@ const SignIn = () => {
     } catch (error: any) {
       console.error("Đăng nhập thất bại:", error);
       toast.error(error.message || "Đăng nhập thất bại");
-      setApiError(
-        error.message || "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại sau."
-      );
+      // setApiError(
+      //   error.message || "Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại sau."
+      // );
     } finally {
       setIsSubmitting(false);
     }
@@ -162,14 +162,13 @@ const SignIn = () => {
                 className="space-y-4 sm:space-y-5 md:space-y-6"
                 onSubmit={handleSubmit}
               >
-                {apiError && (
+                {/* {apiError && (
                   <div className="p-3 rounded-lg bg-red-500/20 border border-red-500/30">
                     <p className="text-red-400 text-sm flex items-center">
                       <AlertCircle size={14} className="mr-2" /> {apiError}
                     </p>
                   </div>
-                )}
-
+                )} */}
                 <div className="space-y-3 sm:space-y-4">
                   {/* Input Username */}
                   <div>
@@ -179,7 +178,7 @@ const SignIn = () => {
                         name="username"
                         value={formData.username}
                         onChange={handleChange}
-                        placeholder="Email hoặc tên đăng nhập"
+                        placeholder="Tên đăng nhập"
                         className="h-10 sm:h-11 md:h-12 px-4 sm:px-5 w-full bg-white/5 border-0 rounded-lg sm:rounded-xl text-gray-100 text-sm sm:text-base placeholder:text-gray-400 transition-all duration-300 focus-visible:ring-indigo-500 focus-visible:ring-offset-0 focus-visible:border-indigo-400"
                       />
                     </div>
@@ -222,7 +221,6 @@ const SignIn = () => {
                     )}
                   </div>
                 </div>
-
                 {/* Ghi nhớ đăng nhập và Quên mật khẩu - layout responsive */}
                 {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
                   <div className="flex items-center">
@@ -260,7 +258,6 @@ const SignIn = () => {
                     Quên mật khẩu?
                   </Link>
                 </div> */}
-
                 {/* Main Sign In Button - responsive height */}
                 <div>
                   <button
@@ -294,7 +291,6 @@ const SignIn = () => {
                     </span>
                   </button>
                 </div>
-
                 {/* Divider - responsive spacing */}
                 <div className="relative my-5 sm:my-6 md:my-8">
                   <div className="absolute inset-0 flex items-center">
@@ -316,7 +312,6 @@ const SignIn = () => {
                     </span>
                   </div>
                 </div>
-
                 {/* Social Login Buttons - responsive sizing */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-3 md:gap-4">
                   {[

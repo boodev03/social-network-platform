@@ -1,37 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import FollowersList from "./FollowList";
-import CreatePostDialog from "../createPost/CreatePost";
+import CreatePostDialog from "../post/CreatePost";
 import EditProfile from "./editProfile/EditProfile"; // Import modal EditProfile
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { getMe } from "@/services/user";
+
 
 export default function ProfilePage() {
-  const name: string = "Huyền Trân";
-  const username: string = "chaanz.ie";
-  const [bio, setBio] = useState<string>(
-    "Cứ dịu dàng, cứ chân thành vui vẻ\nCứ yêu đời, đời cũng sẽ yêu ta."
-  );
-  const [link, setLink] = useState<string>(
-    "https://www.facebook.com/nhully.tran"
-  );
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [avatar, setAvatar] = useState<string>(
-    "https://www.caythuocdangian.com/wp-content/uploads/anh-dai-dien-61.jpg"
-  );
+  const [username, setUsername] = useState<string>("");
+  const [fullname, setFullname] = useState<string>("");
+  const [avatar, setAvatar] = useState<string>("");
+  const [bio, setBio] = useState<string>("");
+  const [link, setLink] = useState<string>("");
 
-  const handleSaveProfile = (
-    newBio: string,
-    newLink: string,
-    newAvatar?: string | null
-  ) => {
-    setBio(newBio);
-    setLink(newLink);
-    setAvatar(newAvatar ?? "");
-    setIsEditing(false);
+  const fetchUser = async () => {
+    try {
+      const response = await getMe();
+      setUsername(response.data.username);
+      setFullname(response.data.fullname);
+      setAvatar(response.data.avatar);
+      setBio(response.data.bio);
+      setLink(response.data.link);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
   };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-white text-black p-4">
@@ -40,7 +43,7 @@ export default function ProfilePage() {
         <div className="flex items-start justify-between">
           {/* Thông tin cơ bản */}
           <div className="flex flex-col gap-2">
-            <h2 className="text-3xl font-bold">{name}</h2>
+            <h2 className="text-3xl font-bold">{fullname}</h2>
             <p className="text-sm text-gray-500">{username}</p>
             <p className="text-sm text-gray-700 whitespace-pre-line">{bio}</p>
 
@@ -66,6 +69,8 @@ export default function ProfilePage() {
               style={{ objectFit: "cover" }}
             />
           </Avatar>
+
+
         </div>
 
         {/* Button mở modal EditProfile */}
@@ -94,7 +99,7 @@ export default function ProfilePage() {
             {/* Create Post Box */}
             <div className="flex items-center gap-2 my-4">
               <Avatar className="w-10 h-10">
-                <AvatarImage src={avatar} alt="User Avatar" />
+                <AvatarImage src={avatar} alt="User Avatar" style={{ objectFit: "cover" }} />
               </Avatar>
 
               <Dialog>
@@ -119,12 +124,13 @@ export default function ProfilePage() {
       {/* Hiển thị modal EditProfile khi isEditing = true */}
       {isEditing && (
         <EditProfile
-          name={name}
           username={username}
+          fullname={fullname}
+          avatar={avatar}
           bio={bio}
           link={link}
-          onSave={handleSaveProfile}
           onClose={() => setIsEditing(false)}
+          onUpdate={fetchUser}
         />
       )}
     </div>

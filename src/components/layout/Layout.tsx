@@ -1,8 +1,8 @@
 import { Bell, Home, LogOut, PlusSquare, Search, User } from "lucide-react";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ROUTES } from "../../constants/routes";
-import CreatePostDialog from "../createPost/CreatePost";
+import CreatePostDialog from "../post/CreatePost";
 import { useAuth } from "@/providers/AuthProvider";
 import { toast } from "sonner";
 
@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { getMe } from "@/services/user";
 
 // These imports will be needed when you install the packages
 // import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -27,6 +28,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { logout } = useAuth();
   const isActive = (path: string) => location.pathname === path;
 
+  const [avatar, setAvatar] = useState("");
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -37,10 +40,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     }
   };
 
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await getMe();
+        setAvatar(response.data.avatar);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+
   return (
     <div className="min-h-screen bg-white text-black font-sans">
       {/* Left Sidebar */}
-      <div className="fixed left-0 top-0 h-full w-16 md:w-20 border-r border-gray-200 flex flex-col items-center py-6">
+      <div className="fixed left-0 top-0 h-full w-12 md:w-18 lg:w-20 border-r border-gray-200 flex flex-col items-center py-6 transition-all duration-300 ease-in-out">
         <div className="mb-8">
           <svg className="h-8 w-8" viewBox="0 0 192 192" fill="none">
             <path
@@ -71,9 +88,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <nav className="flex flex-col items-center space-y-8 flex-1">
           <Link
             to={ROUTES.HOME}
-            className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 ${
-              isActive(ROUTES.HOME) ? "bg-black/10" : ""
-            }`}
+            className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 ${isActive(ROUTES.HOME) ? "bg-black/10" : ""
+              }`}
           >
             <Home
               size={28}
@@ -87,9 +103,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </button> */}
           <Link
             to={ROUTES.SEARCH}
-            className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 ${
-              isActive(ROUTES.SEARCH) ? "bg-black/10" : ""
-            }`}
+            className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 ${isActive(ROUTES.SEARCH) ? "bg-black/10" : ""
+              }`}
           >
             <Search
               size={28}
@@ -119,23 +134,34 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Dialog>
           </button>
 
-          <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
+          {/* <button className="p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20">
             <Bell size={28} strokeWidth={2} className="text-gray-500" />
-          </button>
+          </button> */}
+          <Link
+            to={ROUTES.NOTIFICATION}
+            className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 ${isActive(ROUTES.NOTIFICATION) ? "bg-black/10" : ""
+              }`}>
+            <Bell
+              size={28}
+              strokeWidth={2}
+              className={
+                isActive(ROUTES.NOTIFICATION) ? "text-black" : "text-gray-500"
+              }
+            />
+          </Link>
         </nav>
 
         <div className="mt-auto">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
-                className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 block ${
-                  isActive(ROUTES.PROFILE) ? "bg-black/10" : ""
-                }`}
+                className={`p-2 rounded-lg transition-all duration-300 ease-in-out hover:bg-black/10 active:bg-black/20 block ${isActive(ROUTES.PROFILE) ? "bg-black/10" : ""
+                  }`}
               >
                 <div className="relative">
                   <div className="w-8 h-8 rounded-full bg-gray-200 overflow-hidden">
                     <img
-                      src="https://i.pravatar.cc/100?img=1"
+                      src={avatar}
                       alt="Profile"
                       className="w-full h-full object-cover"
                     />
@@ -175,7 +201,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </div>
 
       {/* Main Content */}
-      <div className="ml-0">
+      <div className="ml-12 md:ml-18 lg:ml-20 transition-all duration-300 ease-in-out">
         {/* Header for mobile - only shown on smaller screens */}
         <header className="md:hidden border-b border-gray-200 sticky top-0 bg-white z-10 px-4 py-3">
           <div className="flex justify-center">
