@@ -40,12 +40,27 @@ export default function EditProfile({
   const handleUpdateProfile = async () => {
     try {
       const formData = new FormData();
-      formData.append("fullname", newName);
-      formData.append("bio", newBio);
-      formData.append("link", newLink);
+
+      if (!newName.trim()) {
+        setError("Tên không được để trống");
+        return;
+      }
+
+      if (newName !== fullname) {
+        formData.append("fullname", newName.trim());
+      }
+      
+      if (newBio !== bio) {
+        formData.append("bio", newBio?.trim() || "");
+      }
+      
+      if (newLink !== link) {
+        formData.append("link", newLink?.trim() || "");
+      }
 
       if (newAvatar) {
         formData.append("file", newAvatar);
+        console.log(newAvatar)
       }
 
       const response = await updateProfileWithFormData(formData);
