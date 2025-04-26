@@ -1,6 +1,13 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const API_URL = import.meta.env.VITE_USER_SERVICE_URL;
+
+// Cookie keys
+const COOKIE_KEYS = {
+    USER: 'user_data',
+    TOKEN: 'auth_token'
+};
 
 interface RegisterResponse {
     success: boolean;
@@ -13,29 +20,26 @@ interface RegisterResponse {
 }
 
 interface LoginResponse {
+    success: boolean;
     data: {
-        success: boolean;
-        message: string;
         accessToken: string;
-        data: {
-            username: string;
+        refreshToken: string;
+        user: {
             id: string;
+            username: string;
             email: string;
-            fullname: string;
         };
     }
 }
 
-interface UserProfile {
-    data: {
-        id: string;
-        username: string;
-        email: string;
-        fullname: string;
-        link: string;
-        bio: string;
-        avatar: string;
-    }
+export interface UserProfile {
+    _id: string;
+    username: string;
+    email: string;
+    fullname: string;
+    link: string;
+    bio: string;
+    avatar: string;
 }
 
 interface UpdateProfilePayload {
@@ -91,7 +95,11 @@ export const login = async (
         );
 
         if (response.data.data.accessToken) {
-            localStorage.setItem('token', response.data.data.accessToken);
+            Cookies.set(COOKIE_KEYS.TOKEN, response.data.data.accessToken, {
+                expires: 7,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'strict'
+            });
         }
 
         return response.data;
@@ -111,7 +119,7 @@ export const login = async (
 
 export const getMe = async (): Promise<UserProfile> => {
     try {
-        const token = localStorage.getItem('token');
+        const token = Cookies.get(COOKIE_KEYS.TOKEN);
 
         if (!token) {
             throw new Error('Không tìm thấy token đăng nhập');
@@ -139,7 +147,7 @@ export const getMe = async (): Promise<UserProfile> => {
 
 export const updateProfileWithFormData = async (formData: FormData): Promise<UpdateProfilePayload> => {
     try {
-        const token = localStorage.getItem("token");
+        const token = Cookies.get(COOKIE_KEYS.TOKEN);
         if (!token) throw new Error("Không tìm thấy token đăng nhập");
 
         const response = await axios.patch<UpdateProfilePayload>(
@@ -169,7 +177,7 @@ export const updateProfileWithFormData = async (formData: FormData): Promise<Upd
 
 export const logout = async (): Promise<LogoutResponse> => {
     try {
-        const token = localStorage.getItem('token');
+        const token = Cookies.get(COOKIE_KEYS.TOKEN);
 
         if (!token) {
             throw new Error('Không tìm thấy token đăng nhập');
@@ -185,7 +193,8 @@ export const logout = async (): Promise<LogoutResponse> => {
             }
         );
 
-        localStorage.removeItem('token');
+        Cookies.remove(COOKIE_KEYS.TOKEN);
+        Cookies.remove(COOKIE_KEYS.USER);
 
         return response.data;
     } catch (error) {
@@ -201,10 +210,12 @@ export const logout = async (): Promise<LogoutResponse> => {
     }
 };
 
-export const getUserProfile = async (userId: string): Promise<UserProfile> => {
+export const getUsersByIds = async (userIds: string[]): Promise<UserProfile[]> => {
     try {
-        const response = await axios.get<UserProfile>(`${API_URL}/users/${userId}`);
-        return response.data;
+        const response = await axios.post<{ success: boolean, data: UserProfile[] }>(`${API_URL}/users/get-users-by-ids`, {
+            userIds
+        });
+        return response.data.data;
     } catch (error) {
         if (axios.isAxiosError(error) && error.response) {
             throw error.response.data;
@@ -218,9 +229,11 @@ export const getUserProfile = async (userId: string): Promise<UserProfile> => {
     }
 };
 
+
+
 axios.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
+        const token = Cookies.get(COOKIE_KEYS.TOKEN);
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }

@@ -61,13 +61,17 @@ const SignIn = () => {
 
     try {
       const response = await login(formData.username, formData.password);
-      authLogin({
-        id: response.data.data.id,
-        username: response.data.data.username,
-        email: response.data.data.email,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
+      console.log(response);
+      authLogin(
+        {
+          id: response.data.user.id,
+          username: response.data.user.username,
+          email: response.data.user.email,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        response.data.accessToken
+      );
       toast.success("Đăng nhập thành công!");
       navigate(ROUTES.HOME);
     } catch (error: any) {

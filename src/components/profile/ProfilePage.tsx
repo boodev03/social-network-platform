@@ -9,7 +9,6 @@ import EditProfile from "./editProfile/EditProfile"; // Import modal EditProfile
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { getMe } from "@/services/user";
 
-
 export default function ProfilePage() {
   const [username, setUsername] = useState<string>("");
   const [fullname, setFullname] = useState<string>("");
@@ -24,7 +23,7 @@ export default function ProfilePage() {
       setFullname(response.data.fullname);
       setAvatar(response.data.avatar);
       setBio(response.data.bio);
-      setLink(response.data.link);
+      setLink(response.data.link === "null" ? "" : response.data.link);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -69,8 +68,6 @@ export default function ProfilePage() {
               style={{ objectFit: "cover" }}
             />
           </Avatar>
-
-
         </div>
 
         {/* Button mở modal EditProfile */}
@@ -99,7 +96,11 @@ export default function ProfilePage() {
             {/* Create Post Box */}
             <div className="flex items-center gap-2 my-4">
               <Avatar className="w-10 h-10">
-                <AvatarImage src={avatar} alt="User Avatar" style={{ objectFit: "cover" }} />
+                <AvatarImage
+                  src={avatar}
+                  alt="User Avatar"
+                  style={{ objectFit: "cover" }}
+                />
               </Avatar>
 
               <Dialog>
