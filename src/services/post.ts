@@ -216,11 +216,11 @@ export const createPoll = async (pollData: PollData): Promise<Post> => {
 
 /**
  * Vote cho một option trong poll
- * @param pollId - ID của poll
- * @param optionId - ID của option được chọn
+ * @param postId - ID của bài post chứa poll
+ * @param pollOptionId - ID của option được chọn
  * @returns Kết quả sau khi vote
  */
-export const votePoll = async (pollId: string, optionId: string): Promise<{
+export const votePoll = async (postId: string, pollOptionId: string, userId: string): Promise<{
     success: boolean;
     message: string;
     data: Post;
@@ -239,8 +239,11 @@ export const votePoll = async (pollId: string, optionId: string): Promise<{
             data: Post;
             statusCode: number;
         }>(
-            `${API_URL}/${pollId}/vote`,
-            { optionId },
+            `${API_URL}/${postId}/polls/votes`,
+            {
+                poll_option_id: pollOptionId,
+                user_id: userId
+            },
             {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -257,6 +260,56 @@ export const votePoll = async (pollId: string, optionId: string): Promise<{
             throw {
                 success: false,
                 message: "Đã xảy ra lỗi khi vote. Vui lòng thử lại sau.",
+                error: error instanceof Error ? error.message : "Unknown error",
+            };
+        }
+    }
+};
+
+/**
+ * Vote (like) cho một bài post
+ * @param postId - ID của bài post cần vote
+ * @returns Thông tin bài post sau khi vote
+ */
+export const votePost = async (postId: string): Promise<{
+    success: boolean;
+    message: string;
+    data: Post;
+    statusCode: number;
+}> => {
+    try {
+        const token = Cookies.get(COOKIE_KEYS.TOKEN);
+
+        if (!token) {
+            throw new Error('Không tìm thấy token đăng nhập');
+        }
+
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+        const response = await axios.post<{
+            success: boolean;
+            message: string;
+            data: Post;
+            statusCode: number;
+        }>(
+            `${API_URL}/${postId}/votes`,
+            { user_id: user.id },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error("Lỗi khi vote bài post:", error);
+        if (axios.isAxiosError(error) && error.response) {
+            throw error.response.data;
+        } else {
+            throw {
+                success: false,
+                message: "Đã xảy ra lỗi khi vote bài post. Vui lòng thử lại sau.",
                 error: error instanceof Error ? error.message : "Unknown error",
             };
         }

@@ -10,6 +10,10 @@ import { useNavigate } from "react-router-dom";
 import { Post } from "@/types/post";
 import { Poll } from "@/components/poll/Poll";
 import { MediaRender } from "./MediaRender";
+import { useAuth } from "@/providers/AuthProvider";
+import { votePoll } from "@/services/post";
+import { useState } from "react";
+import { toast } from "sonner";
 
 // Define the media item type to match MediaRender
 interface MediaItem {
@@ -19,11 +23,60 @@ interface MediaItem {
 
 export default function FeedItem(post: Post) {
   const navigate = useNavigate();
-
+  const { user } = useAuth();
+  const [pollData, setPollData] = useState(post);
   // Handle media click for fullscreen preview
   const handleMediaClick = (media: MediaItem, index: number) => {
     console.log(`Media clicked: ${media.url} at index ${index}`);
     // Implement fullscreen preview logic here if needed
+  };
+
+  const handleVote = async (optionId: string) => {
+    if (!user) {
+      console.error("User not authenticated");
+      return;
+    }
+    if (!post._id) {
+      console.error("Post ID is missing");
+      return;
+    }
+    // 1. Lưu trạng thái hiện tại để khôi phục nếu thất bại
+    const previousPollData = { ...pollData };
+
+    // 2. Cập nhật UI ngay lập tức (optimistic)
+    setPollData((current) => {
+      if (!current.poll) return current;
+
+      return {
+        ...current,
+        poll: {
+          ...current.poll,
+          poll_options: current.poll.poll_options.map((option) =>
+            option._id === optionId
+              ? { ...option, vote_count: option.vote_count + 1 }
+              : option
+          ),
+        },
+      };
+    });
+
+    try {
+      // 3. Gọi API thực tế
+      const response = await votePoll(post._id, optionId, user.id);
+      if (response.success) {
+        console.log("Vote successful");
+      } else {
+        console.error("Vote failed:", response.message);
+        // 5. Khôi phục trạng thái nếu thất bại
+        setPollData(previousPollData);
+        toast.error("Không thể vote, vui lòng thử lại");
+      }
+    } catch (error) {
+      console.error("Error voting on poll:", error);
+      // 5. Khôi phục trạng thái nếu thất bại
+      setPollData(previousPollData);
+      toast.error("Không thể vote, vui lòng thử lại");
+    }
   };
 
   return (
@@ -34,7 +87,7 @@ export default function FeedItem(post: Post) {
           <div className="flex items-center gap-3">
             <div className="relative">
               <img
-                src="https://randomuser.me/api/portraits/men/85.jpg"
+                src={post.creator?.avatar}
                 alt="User avatar"
                 className="w-10 h-10 rounded-full object-cover border-2 border-background"
               />
@@ -72,9 +125,37 @@ export default function FeedItem(post: Post) {
 
         {/* Post content */}
         <div className="mb-3">
-          <p className="whitespace-pre-wrap text-sm leading-relaxed mb-3">
-            {post.content}
-          </p>
+          <div className="whitespace-pre-wrap text-sm leading-relaxed mb-3">
+            <p>{post.content}</p>
+
+            {/* Display user tags if available */}
+            {post.user_tags && post.user_tags.length > 0 && (
+              <div className="mt-1 flex flex-wrap gap-1">
+                {post.user_tags.map((tag) => (
+                  <span
+                    key={tag.id}
+                    className="text-primary font-medium hover:underline cursor-pointer"
+                  >
+                    @{tag.name}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Display hashtags if available */}
+            {post.hashtags && post.hashtags.length > 0 && (
+              <div className="mt-1 flex flex-wrap gap-1.5">
+                {post.hashtags.map((hashtag) => (
+                  <span
+                    key={hashtag}
+                    className="text-primary hover:underline cursor-pointer"
+                  >
+                    {hashtag}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Media content using MediaRender component */}
           {post.urls && post.urls.length > 0 && (
@@ -86,17 +167,13 @@ export default function FeedItem(post: Post) {
           )}
 
           {/* Poll component */}
-          {post.poll && (
+          {post.poll && pollData?.poll && (
             <div className="mt-4">
               <Poll
-                options={post.poll.poll_options}
-                endAt={post.poll.end_at}
-                status={post.poll.status_poll}
-                onVote={async (optionId) => {
-                  console.log(`Voted for option: ${optionId}`);
-                  // Implement voting API call here
-                  return Promise.resolve();
-                }}
+                options={pollData.poll.poll_options}
+                endAt={pollData.poll.end_at}
+                status={pollData.poll.status_poll}
+                onVote={handleVote}
               />
             </div>
           )}

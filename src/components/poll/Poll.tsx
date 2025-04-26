@@ -90,7 +90,8 @@ export function Poll({
     setIsVoting(true);
     try {
       await onVote(selectedOption);
-      toast.success("Your vote has been recorded!");
+      setSelectedOption(null);
+      // toast.success("Your vote has been recorded!");
     } catch (error) {
       toast.error("Failed to record your vote. Please try again.");
       console.error("Vote error:", error);
@@ -135,7 +136,7 @@ export function Poll({
             {options.map((option) => {
               const percentage = getPercentage(option.vote_count);
               const isSelected = selectedOption === option._id;
-              const showResults = userVoted || !isPollActive;
+              const showResults = 1;
 
               return (
                 <motion.div
@@ -146,13 +147,12 @@ export function Poll({
                   className={cn(
                     "relative rounded-md border p-3 transition-colors",
                     isSelected && "border-primary bg-primary/5",
-                    showResults
-                      ? "cursor-default"
-                      : "cursor-pointer hover:bg-muted/50",
+                    "cursor-default",
                     !isPollActive && "opacity-80"
                   )}
                   onClick={() => {
-                    if (!showResults && isPollActive) {
+                    if (isPollActive) {
+                      console.log(option._id);
                       setSelectedOption(option._id);
                     }
                   }}

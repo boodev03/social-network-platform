@@ -19,11 +19,12 @@ export default function ProfilePage() {
   const fetchUser = async () => {
     try {
       const response = await getMe();
-      setUsername(response.data.username);
-      setFullname(response.data.fullname);
-      setAvatar(response.data.avatar);
-      setBio(response.data.bio);
-      setLink(response.data.link === "null" ? "" : response.data.link);
+      console.log(response);
+      setUsername(response.username);
+      setFullname(response.fullname);
+      setAvatar(response.avatar);
+      setBio(response.bio);
+      setLink(response.link === "null" ? "" : response.link);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }

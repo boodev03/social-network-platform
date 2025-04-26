@@ -84,11 +84,6 @@ const SignUp = () => {
       isValid = false;
     }
 
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Vui lòng nhập tên";
-      isValid = false;
-    }
-
     setErrors(newErrors);
     return isValid;
   };
@@ -104,9 +99,9 @@ const SignUp = () => {
     try {
       const response = await register(
         formData.username,
-        formData.fullname,
         formData.password,
-        formData.email
+        formData.email,
+        formData.fullname
       );
       toast.success(response.message);
       setTimeout(() => {
@@ -287,7 +282,7 @@ const SignUp = () => {
                   </div>
 
                   {/* Full Name Input */}
-                  <div>
+                  {/* <div>
                     <div className="group relative">
                       <div className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
                         <User size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -310,7 +305,7 @@ const SignUp = () => {
                         {errors.fullName}
                       </p>
                     )}
-                  </div>
+                  </div> */}
 
                   {/* Password Input */}
                   <div>

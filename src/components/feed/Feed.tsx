@@ -1,5 +1,5 @@
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
 
 import CreatePostDialog from "../post/CreatePost";
 import FeedItem from "./FeedItem";
@@ -7,14 +7,18 @@ import FeedItem from "./FeedItem";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-import { useAuth } from "@/providers/AuthProvider";
 import { getAllPosts } from "@/services/post";
+import { getMe } from "@/services/user";
 import { Loader2 } from "lucide-react";
 
 const Feed = () => {
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
-  const { user } = useAuth();
   const observerTarget = useRef<HTMLDivElement>(null);
+
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: getMe,
+  });
 
   // Use React Query for data fetching with infinite scroll
   const {
@@ -75,14 +79,16 @@ const Feed = () => {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pt-5">
+      <p className="font-bold text-center">Bảng tin</p>
       <Card className="p-4">
         <Dialog open={isCreatePostOpen} onOpenChange={setIsCreatePostOpen}>
           <DialogTrigger asChild>
             <div className="flex gap-3 cursor-pointer">
               <Avatar>
                 <AvatarImage
-                  src={user?.avatar || "https://github.com/shadcn.png"}
+                  className="border border-gray-300 overflow-hidden rounded-full"
+                  src={userProfile?.avatar || "https://github.com/shadcn.png"}
                 />
               </Avatar>
               <div className="flex-1 py-2 px-4 rounded-full bg-muted hover:bg-muted/80 text-muted-foreground text-sm">

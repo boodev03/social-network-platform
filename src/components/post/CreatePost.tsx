@@ -1,26 +1,26 @@
-import { useState } from "react";
-import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Image as PhotoIcon } from "lucide-react";
+import { DialogClose, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { createPoll, createPost } from "@/services/post";
+import { getMe } from "@/services/user";
+import { Visibility } from "@/types/post";
+import { useQuery } from "@tanstack/react-query";
 import {
-  Hash,
-  ListFilterPlus,
-  PlusCircle,
-  X,
   BarChart2,
   Clock,
+  Hash,
+  Image as PhotoIcon,
+  PlusCircle,
+  X,
 } from "lucide-react";
-import { createPost, createPoll } from "@/services/post";
+import { useState } from "react";
 import { toast } from "sonner";
-import { DialogClose, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAuth } from "@/providers/AuthProvider";
-import { Visibility } from "@/types/post";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
 
 interface IProps {
   setOpen?: (open: boolean) => void;
@@ -32,8 +32,13 @@ export default function CreatePostDialog({ setOpen, onPostCreated }: IProps) {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [previewImages, setPreviewImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { user } = useAuth();
 
+  // Use TanStack Query to fetch user profile
+  const { data: userProfile } = useQuery({
+    queryKey: ["userProfile"],
+    queryFn: getMe,
+  });
+  console.log(userProfile);
   // Poll related states
   const [isPollActive, setIsPollActive] = useState(false);
   const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
@@ -113,7 +118,7 @@ export default function CreatePostDialog({ setOpen, onPostCreated }: IProps) {
       return;
     }
 
-    if (!user) {
+    if (!userProfile) {
       toast.error("Bạn cần đăng nhập để đăng bài viết");
       return;
     }
@@ -128,7 +133,7 @@ export default function CreatePostDialog({ setOpen, onPostCreated }: IProps) {
     try {
       // Create base post data
       const postData = {
-        creator_id: user.id,
+        creator_id: userProfile._id,
         content,
         visibility: Visibility.PUBLIC,
         hashtags: [],
@@ -170,12 +175,12 @@ export default function CreatePostDialog({ setOpen, onPostCreated }: IProps) {
       setIsPollActive(false);
       setPollOptions(["", ""]);
 
-      // Close dialog automatically
-      setOpen?.(false);
-
       if (onPostCreated) {
         await onPostCreated();
       }
+
+      // Close dialog automatically
+      setOpen?.(false);
     } catch (error) {
       console.error("Lỗi khi đăng bài viết:", error);
       toast.error(
@@ -198,8 +203,13 @@ export default function CreatePostDialog({ setOpen, onPostCreated }: IProps) {
 
       <div className="flex items-start gap-3 pt-2">
         <Avatar className="mt-1">
-          <AvatarImage src={user?.avatar || "https://github.com/shadcn.png"} />
-          <AvatarFallback>{user?.username?.charAt(0) || "U"}</AvatarFallback>
+          <AvatarImage
+            className="border border-gray-300 overflow-hidden rounded-full"
+            src={userProfile?.avatar || "https://github.com/shadcn.png"}
+          />
+          <AvatarFallback>
+            {userProfile?.username?.charAt(0) || "U"}
+          </AvatarFallback>
         </Avatar>
 
         <div className="flex-1 space-y-4">
@@ -340,10 +350,6 @@ export default function CreatePostDialog({ setOpen, onPostCreated }: IProps) {
 
           <Button variant="ghost" className="rounded-full w-9 h-9 p-0" disabled>
             <Hash className="w-5 h-5 text-slate-600" />
-          </Button>
-
-          <Button variant="ghost" className="rounded-full w-9 h-9 p-0" disabled>
-            <ListFilterPlus className="w-5 h-5 text-slate-600" />
           </Button>
         </div>
 
